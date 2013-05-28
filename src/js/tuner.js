@@ -50,14 +50,38 @@ Tuner.prototype.fromFreqArray = function(e,i,obj){
   return note;
 };
 
+Tuner.prototype.closestNote = function(freq){
+  /* The note array is small enough to use
+   * linear search.
+   */
+  var noteArray     = this.frequencies;
+  var minDifference = Math.abs (noteArray[0].frequency - freq);
+  var closestNote   = noteArray[0];
+  
+  for(n in this.frequencies){
+    var currentDifference = Math.abs(noteArray[n].frequency - freq);
+    
+    if (currentDifference < minDifference){
+      minDifference = currentDifference;
+      closestNote   = noteArray[n];
+    }
+  }
+
+  if (closestNote.frequency > freq){
+    return { "note" : closestNote, "comp" : "LT"};
+  } else if (closestNote.frequency < freq){
+    return { "note" : closestNote, "comp" : "GT"};
+  } else {
+    return { "note" : closestNote, "comp" : "EQ"};
+  }
+};
+
 Tuner.prototype.run = function(stream) {
   var context = new AudioContext();
 
-  var source  = context.createMediaStreamSource(stream);
+  var source   = context.createMediaStreamSource(stream);
   var lowpass  = context.createBiquadFilter();
   var highpass = context.createBiquadFilter();
-
-  console.log(this.frequencies);
 
   lowpass.type = "lowpass";
   /* slightly above E6 */
