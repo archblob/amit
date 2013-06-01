@@ -3,6 +3,7 @@
  * with anything higher than E6, even that is way to high, but i
  * thought that we can at least cover 24 frets.
  */
+
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
   [46.25,"F#1"],  [ 49.00,"G1"],
@@ -39,6 +40,9 @@ frequencies = [
 
 function Tuner(){
   this.frequencies = frequencies.map(this.fromFreqArray);
+  this.sampleRate  = 44100;
+  this.downsampleFactor = 8;
+  this.fftSize = 8192;
 };
 
 Tuner.prototype.fromFreqArray = function(e,i,obj){
@@ -76,11 +80,27 @@ Tuner.prototype.closestNote = function(freq){
   }
 };
 
+Tuner.prototype.hps = function(spectrum, opt_harmonics){
+  var peek = 1;
+  
+  for(var i=1; i < (spectrum.length/opt_harmonics); i++){
+    for(var j = 1; j < opt_harmonics; j++){
+      spectrum[i] *= spectrum[i*j];
+    }
+    
+    if (spectrum[i] > spectrum[peek]){
+      peek = i;
+    }
+  }
+  
+  return peek;
+};
+
 Tuner.prototype.run = function(stream) {
   var context = new AudioContext();
 
-  var source   = context.createMediaStreamSource(stream);
-  var lowpass  = context.createBiquadFilter();
+  var source = context.createMediaStreamSource(stream);
+  var lowpass = context.createBiquadFilter();
   var highpass = context.createBiquadFilter();
 
   lowpass.type = "lowpass";
