@@ -39,10 +39,16 @@ frequencies = [
 ];
 
 function Tuner(){
+  this.streamSampleRate = 44100;
+  this.downsampleFactor = 20;
+  this.fftSize = 2048;
+  this.sampleRate = this.streamSampleRate / this.downsampleFactor;
+  this.resolution = this.sampleRate / this.fftSize;
+  this.bufferSize = this.fftSize * this.downsampleFactor;
+  this.tWindow = this.bufferSize / this.streamSampleRate; 
+  this.samples = undefined;
+  this.view    = document.getElementById("freq"); /* just for testing */
   this.frequencies = frequencies.map(this.fromFreqArray);
-  this.sampleRate  = 44100;
-  this.downsampleFactor = 8;
-  this.fftSize = 8192;
 };
 
 Tuner.prototype.fromFreqArray = function(e,i,obj){
@@ -80,8 +86,15 @@ Tuner.prototype.closestNote = function(freq){
   }
 };
 
-Tuner.prototype.hps = function(spectrum, opt_harmonics){
+Tuner.prototype.hps = function(spectrum, opt_h){
   var peek = 1;
+  var opt_harmonics;
+  
+  if (opt_h){
+    opt_harmonics = opt_h;
+  } else {
+    opt_harmonics = 3;
+  }
   
   for(var i=1; i < (spectrum.length/opt_harmonics); i++){
     for(var j = 1; j < opt_harmonics; j++){
@@ -96,21 +109,60 @@ Tuner.prototype.hps = function(spectrum, opt_harmonics){
   return peek;
 };
 
+Tuner.prototype.fundamental = function(){
+  var hamm = new WindowFunction(DSP.HAMMING);
+  var fft  = new FFT(this.fftSize,this.sampleRate);
+  var step = this.downsampleFactor;
+  
+  hamm.process(this.samples);
+  
+  var downsampled = [];
+  for (var i=0; i < this.bufferSize ; i += step){
+    downsampled.push(this.samples[i]);
+  }
+  
+  fft.forward(downsampled);
+  
+  var spectrum = fft.spectrum;
+  var peek = this.hps(spectrum,3);
+  
+  this.view.innerHTML = this.closestNote(peek * this.resolution).note.name;
+};
+
 Tuner.prototype.run = function(stream) {
-  var context = new AudioContext();
+  var self = this;
+  self.samples = new Float32Array(self.bufferSize);
+  var context  = new AudioContext();
 
-  var source = context.createMediaStreamSource(stream);
-  var lowpass = context.createBiquadFilter();
-  var highpass = context.createBiquadFilter();
+  var source    = context.createMediaStreamSource(stream);
+  var lowpass   = context.createBiquadFilter();
+  var highpass  = context.createBiquadFilter();
+  var processor = context.createScriptProcessor(self.fftSize,1,1);
 
+  processor.onaudioprocess = function(event){
+    var input = event.inputBuffer.getChannelData(0);
+    
+    for(var i = input.length ; i < self.bufferSize ; i++){
+      self.samples[i - self.fftSize] = self.samples[i];
+    }
+    
+    for(var i = 0 ; i < input.length ; i++){
+      self.samples[self.samples.length - self.fftSize + i] = input[i];
+    }
+    
+    event.outputBuffer.getChannelData(0).set(input);
+  };
+  
   lowpass.type = "lowpass";
-  /* slightly above E6 */
-  lowpass.frequency = 1320;
+  lowpass.frequency = (self.sampleRate / 2).toFixed(3);
+  
   highpass.type = "highpass";
-  /* slightly below E1 */
   highpass.frequency = 35;
 
   source.connect(lowpass);
   lowpass.connect(highpass);
-  highpass.connect(context.destination);
+  highpass.connect(processor);
+  processor.connect(context.destination);
+
+  return window.setInterval(this.fundamental.bind(this),self.tWindow.toFixed(3));
 };
