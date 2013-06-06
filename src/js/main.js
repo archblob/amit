@@ -7,8 +7,9 @@ navigator.getUserMedia =
   navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 if (window.AudioContext && navigator.getUserMedia){
-  var myTuner = new Tuner();
-  
+  var myView  = new CentsView("centsView");
+  var myTuner = new Tuner(myView);
+
   navigator.getUserMedia({audio : true},
     function(stream){ 
     myTuner.run(stream);

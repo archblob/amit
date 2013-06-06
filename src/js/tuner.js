@@ -38,7 +38,7 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
-function Tuner(){
+function Tuner(tunerView){
   this.streamSampleRate = 44100;
   this.downsampleFactor = 20;
   this.fftSize = 2048;
@@ -47,7 +47,7 @@ function Tuner(){
   this.bufferSize = this.fftSize * this.downsampleFactor;
   this.tWindow = this.bufferSize / this.streamSampleRate; 
   this.samples = undefined;
-  this.view    = document.getElementById("freq"); /* just for testing */
+  this.view    = tunerView;
   this.frequencies = frequencies.map(this.fromFreqArray);
 };
 
@@ -77,13 +77,12 @@ Tuner.prototype.closestNote = function(freq){
     }
   }
 
-  if (closestNote.frequency > freq){
-    return { "note" : closestNote, "comp" : "LT"};
-  } else if (closestNote.frequency < freq){
-    return { "note" : closestNote, "comp" : "GT"};
-  } else {
-    return { "note" : closestNote, "comp" : "EQ"};
-  }
+  var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
+  
+  return { "note"  : closestNote,
+           "cents" : cents,
+           "frequency" : freq
+  };
 };
 
 Tuner.prototype.hps = function(spectrum, opt_h){
@@ -126,7 +125,7 @@ Tuner.prototype.fundamental = function(){
   var spectrum = fft.spectrum;
   var peek = this.hps(spectrum,3);
   
-  this.view.innerHTML = this.closestNote(peek * this.resolution).note.name;
+  this.view.update(this.closestNote(peek * this.resolution));
 };
 
 Tuner.prototype.run = function(stream) {
