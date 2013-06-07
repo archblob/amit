@@ -6,7 +6,7 @@
 
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
-  [46.25,"F#1"],  [ 49.00,"G1"],
+  [46.25,"F#1"],  [49.00,"G1"],
   [51.91,"G#1"],  [55.00,"A1"],
   [58.27,"A#1"],  [61.74,"B1"],
   [65.41,"C2"],   [69.30,"C#2"],
@@ -38,20 +38,20 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
-function Tuner(tunerView){
+function Tuner(tunerView) {
   this.streamSampleRate = 44100;
   this.downsampleFactor = 20;
-  this.fftSize = 2048;
-  this.sampleRate = this.streamSampleRate / this.downsampleFactor;
-  this.resolution = this.sampleRate / this.fftSize;
-  this.bufferSize = this.fftSize * this.downsampleFactor;
-  this.tWindow = this.bufferSize / this.streamSampleRate; 
-  this.samples = undefined;
-  this.view    = tunerView;
-  this.frequencies = frequencies.map(this.fromFreqArray);
+  this.fftSize          = 2048;
+  this.sampleRate       = this.streamSampleRate / this.downsampleFactor;
+  this.resolution       = this.sampleRate / this.fftSize;
+  this.bufferSize       = this.fftSize * this.downsampleFactor;
+  this.tWindow          = this.bufferSize / this.streamSampleRate;
+  this.samples          = undefined;
+  this.view             = tunerView;
+  this.frequencies      = frequencies.map(this.fromFreqArray);
 };
 
-Tuner.prototype.fromFreqArray = function(e,i,obj){
+Tuner.prototype.fromFreqArray = function(e,i,obj) {
   var note = new Object();
 
   note.frequency = e[0];
@@ -60,7 +60,7 @@ Tuner.prototype.fromFreqArray = function(e,i,obj){
   return note;
 };
 
-Tuner.prototype.closestNote = function(freq){
+Tuner.prototype.closestNote = function(freq) {
   /* The note array is small enough to use
    * linear search.
    */
@@ -71,7 +71,7 @@ Tuner.prototype.closestNote = function(freq){
   for(n in this.frequencies){
     var currentDifference = Math.abs(noteArray[n].frequency - freq);
     
-    if (currentDifference < minDifference){
+    if(currentDifference < minDifference){
       minDifference = currentDifference;
       closestNote   = noteArray[n];
     }
@@ -85,16 +85,15 @@ Tuner.prototype.closestNote = function(freq){
   };
 };
 
-Tuner.prototype.hps = function(spectrum, opt_h){
-  var peek = 1;
-  var opt_harmonics;
+Tuner.prototype.hps = function(spectrum, opt_h) {
+  var opt_harmonics = 3;
   
-  if (opt_h){
+  if(opt_h){
     opt_harmonics = opt_h;
-  } else {
-    opt_harmonics = 3;
   }
-  
+
+  var peek = 1;
+
   for(var i=1; i < (spectrum.length/opt_harmonics); i++){
     for(var j = 1; j < opt_harmonics; j++){
       spectrum[i] *= spectrum[i*j];
@@ -116,6 +115,7 @@ Tuner.prototype.fundamental = function(){
   hamm.process(this.samples);
   
   var downsampled = [];
+
   for (var i=0; i < this.bufferSize ; i += step){
     downsampled.push(this.samples[i]);
   }
@@ -123,13 +123,13 @@ Tuner.prototype.fundamental = function(){
   fft.forward(downsampled);
   
   var spectrum = fft.spectrum;
-  var peek = this.hps(spectrum,3);
+  var peek     = this.hps(spectrum,3);
   
   this.view.update(this.closestNote(peek * this.resolution));
 };
 
 Tuner.prototype.run = function(stream) {
-  var self = this;
+  var self     = this;
   self.samples = new Float32Array(self.bufferSize);
   var context  = new AudioContext();
 
@@ -138,7 +138,7 @@ Tuner.prototype.run = function(stream) {
   var highpass  = context.createBiquadFilter();
   var processor = context.createScriptProcessor(self.fftSize,1,1);
 
-  processor.onaudioprocess = function(event){
+  processor.onaudioprocess = function(event) {
     var input = event.inputBuffer.getChannelData(0);
     
     for(var i = input.length ; i < self.bufferSize ; i++){
@@ -152,10 +152,10 @@ Tuner.prototype.run = function(stream) {
     event.outputBuffer.getChannelData(0).set(input);
   };
   
-  lowpass.type = "lowpass";
+  lowpass.type      = "lowpass";
   lowpass.frequency = (self.sampleRate / 2).toFixed(3);
   
-  highpass.type = "highpass";
+  highpass.type      = "highpass";
   highpass.frequency = 35;
 
   source.connect(lowpass);
@@ -163,5 +163,6 @@ Tuner.prototype.run = function(stream) {
   highpass.connect(processor);
   processor.connect(context.destination);
 
-  return window.setInterval(this.fundamental.bind(this),self.tWindow.toFixed(3));
+  return window.setInterval(this.fundamental.bind(this),
+                            this.tWindow.toFixed(3));
 };
