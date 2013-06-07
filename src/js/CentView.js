@@ -11,10 +11,21 @@
 function CentsView(canvasID) {
       this.canvas = document.getElementById(canvasID);
       this.ctx = this.canvas.getContext('2d');
+      
       this.centerX = this.canvas.width / 2;
       this.centerY = this.canvas.height;
       this.circumference = 1000;
       this.radius = this.circumference / (2*Math.PI);
+      this.quadrantArc = this.circumference / 4;
+      this.markStep = 50;
+      
+      this.color = "rgb(58,58,58)";
+      this.font  = "50px sans-serif";
+      this.needleColor = "rgb(58,58,58)";
+      this.dotColor = "rgb(58,58,58)";
+      this.dotRadius = 3;
+      this.zeroDotColor = "rgb(44,114,158)";
+      this.zeroDotRadius = 5;
 };
 
 CentsView.prototype.background = function(){
@@ -26,19 +37,19 @@ CentsView.prototype.background = function(){
   */
   this.ctx.beginPath();
   this.ctx.arc(this.centerX,this.centerY,10,0,Math.PI,true);
-  this.ctx.fillStyle = "rgb(58,58,58)";
+  this.ctx.fillStyle = this.needleColor;
   this.ctx.fill();
   
-  for(var arc=0; arc <= this.circumference / 2; arc+=50){
-    var markRadius = 3;
-    var fillStyle  = "rgb(58,58,58)";
+  for(var arc=0; arc <= this.circumference / 2; arc+= this.markStep){
+    var markRadius = this.dotRadius;
+    var fillStyle  = this.dotColor;
 
     this.ctx.beginPath();
     var alfa = arc / this.radius;
     
-    if (arc == this.circumference / 4){
-      markRadius = 5;
-      fillStyle  = "rgb(44,114,158)";
+    if (arc == this.quadrantArc){
+      markRadius = this.zeroDotRadius;
+      fillStyle  = this.zeroDotColor;
     }
     
     var x = this.centerX - this.radius * Math.cos(alfa);
@@ -51,15 +62,15 @@ CentsView.prototype.background = function(){
 };
 
 CentsView.prototype.update = function(peek) {
-  this.ctx.clearRect(0,0,400,200);
+  this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
   this.background();
 
-  this.ctx.font = "50px sans-serif";
-  this.ctx.fillStyle = "rgb(58,58,58)";
+  this.ctx.font = this.font;
+  this.ctx.fillStyle = this.color;
   this.ctx.fillText(peek.note.name,20,50);
   
-  var scaledCents = peek.cents / 100 * 250;
-  var arc  = 250 - scaledCents;
+  var scaledCents = peek.cents / 100 * this.quadrantArc;
+  var arc  = this.quadrantArc - scaledCents;
   var alfa = arc / this.radius;
   
   var x = this.centerX - this.radius * Math.cos(alfa);
@@ -68,6 +79,6 @@ CentsView.prototype.update = function(peek) {
   this.ctx.beginPath();
   this.ctx.moveTo(this.centerX,this.centerY);
   this.ctx.lineTo(x,y);
-  this.ctx.strokeStyle = "rgb(58,58,58)";
+  this.ctx.strokeStyle = this.needleColor;
   this.ctx.stroke();
 };
