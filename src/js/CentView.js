@@ -74,7 +74,7 @@ CentsView.prototype.update = function(peek) {
   var arc         = this.quadrantArc - scaledCents;
   var alfa        = arc / this.radius;
 
-  var x = this.centerX - this.radius * Math.cos(alfa);
+  var x = this.centerX + this.radius * Math.cos(alfa);
   var y = this.centerY - this.radius * Math.sin(alfa);
 
   this.ctx.beginPath();
