@@ -19,7 +19,8 @@ function CentsView(canvasID) {
       this.quadrantArc   = this.circumference / 4;
       
       this.color         = "rgb(58,58,58)";
-      this.font          = "50px sans-serif";
+      this.noteFont      = "50px sans-serif";
+      this.freqFont      = "20px sans-serif";
       this.needleColor   = "rgb(58,58,58)";
       this.dotColor      = "rgb(58,58,58)";
       this.dotRadius     = 3;
@@ -66,9 +67,12 @@ CentsView.prototype.update = function(peek) {
 
   this.background();
 
-  this.ctx.font      = this.font;
+  this.ctx.font      = this.noteFont;
   this.ctx.fillStyle = this.color;
   this.ctx.fillText(peek.note.name,20,50);
+  
+  this.ctx.font = this.freqFont;
+  this.ctx.fillText(peek.note.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
 
   var scaledCents = peek.cents / 100 * this.quadrantArc;
   var arc         = this.quadrantArc - scaledCents;
