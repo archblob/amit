@@ -41,10 +41,11 @@ frequencies = [
 function Tuner(tunerView) {
   this.streamSampleRate = 44100;
   this.downsampleFactor = 20;
-  this.fftSize          = 2048;
+  this.fftSize          = 512;
   this.sampleRate       = this.streamSampleRate / this.downsampleFactor;
   this.resolution       = this.sampleRate / this.fftSize;
   this.bufferSize       = this.fftSize * this.downsampleFactor;
+  this.windowSize       = 512;
   this.tWindow          = this.bufferSize / this.streamSampleRate;
   this.samples          = undefined;
   this.view             = tunerView;
@@ -96,7 +97,7 @@ Tuner.prototype.hps = function(spectrum, opt_h) {
 
   for(var i=1; i < (spectrum.length/opt_harmonics); i++){
     for(var j = 1; j < opt_harmonics; j++){
-      spectrum[i] *= spectrum[i*j];
+        spectrum[i] *= spectrum[i*j];
     }
     
     if (spectrum[i] > spectrum[peek]){
@@ -123,20 +124,20 @@ Tuner.prototype.fundamental = function(){
   fft.forward(downsampled);
   
   var spectrum = fft.spectrum;
-  var peek     = this.hps(spectrum,3);
+  var peek     = this.hps(spectrum);
   
   this.view.update(this.closestNote(peek * this.resolution));
 };
 
 Tuner.prototype.run = function(stream) {
   var self     = this;
-  self.samples = new Float32Array(self.bufferSize);
+  self.samples = new Float32Array(this.bufferSize);
   var context  = new AudioContext();
 
   var source    = context.createMediaStreamSource(stream);
   var lowpass   = context.createBiquadFilter();
   var highpass  = context.createBiquadFilter();
-  var processor = context.createScriptProcessor(self.fftSize,1,1);
+  var processor = context.createScriptProcessor(this.windowSize,1,1);
 
   processor.onaudioprocess = function(event) {
     var input = event.inputBuffer.getChannelData(0);
@@ -164,5 +165,5 @@ Tuner.prototype.run = function(stream) {
   processor.connect(context.destination);
 
   return window.setInterval(this.fundamental.bind(this),
-                            this.tWindow.toFixed(3));
+                            this.tWindow.toFixed(3) * 1000);
 };
