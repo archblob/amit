@@ -7,10 +7,16 @@
  * blue  = rgb(44,114,158);
  */
 
+window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
 function CentsView(canvasID) {
       this.canvas = document.getElementById(canvasID);
       this.ctx    = this.canvas.getContext('2d');
+
+      this.lastCents     = 0;
+      this.cents         = 0;
+      this.noteName      = "T";
+      this.frequency     = 0.00;
       
       this.centerX       = this.canvas.width / 2;
       this.centerY       = this.canvas.height;
@@ -30,12 +36,7 @@ function CentsView(canvasID) {
 };
 
 CentsView.prototype.background = function() {
-  /* ** helper arc ***
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX, this.centerY, this.radius,Math.PI,0,false);
-    this.ctx.strokeStyle = "rgba(0,0,0,0.1)";
-    this.ctx.stroke();
-  */
+
   this.ctx.beginPath();
   this.ctx.arc(this.centerX,this.centerY,10,0,Math.PI,true);
   this.ctx.fillStyle = this.needleColor;
@@ -62,28 +63,37 @@ CentsView.prototype.background = function() {
   }
 };
 
-CentsView.prototype.update = function(peek) {
-  this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+CentsView.prototype.run = function() {
+  var self = this;
 
-  this.background();
+  var arc  = self.quadrantArc - this.cents;
+  var alfa = arc / self.radius;
 
-  this.ctx.font      = this.noteFont;
-  this.ctx.fillStyle = this.color;
-  this.ctx.fillText(peek.note.name,20,50);
-  
-  this.ctx.font = this.freqFont;
-  this.ctx.fillText(peek.note.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
+  var x = self.centerX + self.radius * Math.cos(alfa);
+  var y = self.centerY - self.radius * Math.sin(alfa);
 
-  var scaledCents = peek.cents / 100 * this.quadrantArc;
-  var arc         = this.quadrantArc - scaledCents;
-  var alfa        = arc / this.radius;
+  self.ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
 
-  var x = this.centerX + this.radius * Math.cos(alfa);
-  var y = this.centerY - this.radius * Math.sin(alfa);
+  self.background();
 
-  this.ctx.beginPath();
-  this.ctx.moveTo(this.centerX,this.centerY);
-  this.ctx.lineTo(x,y);
-  this.ctx.strokeStyle = this.needleColor;
-  this.ctx.stroke();
+  self.ctx.font      = self.noteFont;
+  self.ctx.fillStyle = self.color;
+  self.ctx.fillText(this.noteName,20,50);
+
+  self.ctx.font = self.freqFont;
+  self.ctx.fillText(self.frequency.toFixed(2) + " Hz",self.canvas.width-110,40);
+
+  self.ctx.beginPath();
+  self.ctx.moveTo(self.centerX,self.centerY);
+  self.ctx.lineTo(x,y);
+  self.ctx.strokeStyle = self.needleColor;
+  self.ctx.stroke();
+
+  window.requestAnimationFrame(this.run.bind(this));
 };
+
+CentsView.prototype.update = function(peek){
+  this.cents     = peek.cents;
+  this.frequency = peek.frequency;
+  this.noteName  = peek.note.name;
+}

@@ -1,8 +1,10 @@
-/* 
+/*
  * Since we are interested only in guitar tuning we don't bother
  * with anything higher than E6, even that is way to high, but i
  * thought that we can at least cover 24 frets.
  */
+
+importScripts("../lib/dsp.js");
 
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
@@ -38,7 +40,7 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
-function Tuner(tunerView) {
+function Tuner() {
   this.streamSampleRate = 44100;
   this.downsampleFactor = 20;
   this.fftSize          = 512;
@@ -47,8 +49,6 @@ function Tuner(tunerView) {
   this.bufferSize       = this.fftSize * this.downsampleFactor;
   this.windowSize       = 512;
   this.tWindow          = this.bufferSize / this.streamSampleRate;
-  this.samples          = undefined;
-  this.view             = tunerView;
   this.frequencies      = frequencies.map(this.fromFreqArray);
 };
 
@@ -68,10 +68,10 @@ Tuner.prototype.closestNote = function(freq) {
   var noteArray     = this.frequencies;
   var minDifference = Math.abs (noteArray[0].frequency - freq);
   var closestNote   = noteArray[0];
-  
+
   for(n in this.frequencies){
     var currentDifference = Math.abs(noteArray[n].frequency - freq);
-    
+
     if(currentDifference < minDifference){
       minDifference = currentDifference;
       closestNote   = noteArray[n];
@@ -79,7 +79,7 @@ Tuner.prototype.closestNote = function(freq) {
   }
 
   var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
-  
+
   return { "note"  : closestNote,
            "cents" : cents,
            "frequency" : freq
@@ -88,7 +88,7 @@ Tuner.prototype.closestNote = function(freq) {
 
 Tuner.prototype.hps = function(spectrum, opt_h) {
   var opt_harmonics = 3;
-  
+
   if(opt_h){
     opt_harmonics = opt_h;
   }
@@ -99,71 +99,40 @@ Tuner.prototype.hps = function(spectrum, opt_h) {
     for(var j = 1; j < opt_harmonics; j++){
         spectrum[i] *= spectrum[i*j];
     }
-    
+
     if (spectrum[i] > spectrum[peek]){
       peek = i;
     }
   }
-  
+
   return peek;
 };
 
-Tuner.prototype.fundamental = function(){
+Tuner.prototype.fundamental = function(samples){
+  var self = this;
+
   var hamm = new WindowFunction(DSP.HAMMING);
   var fft  = new FFT(this.fftSize,this.sampleRate);
   var step = this.downsampleFactor;
-  
-  hamm.process(this.samples);
-  
+
+  hamm.process(samples);
+
   var downsampled = [];
 
   for (var i=0; i < this.bufferSize ; i += step){
-    downsampled.push(this.samples[i]);
+    downsampled.push(samples[i]);
   }
-  
+
   fft.forward(downsampled);
-  
+
   var spectrum = fft.spectrum;
   var peek     = this.hps(spectrum);
-  
-  this.view.update(this.closestNote(peek * this.resolution));
+
+  postMessage({ peek : self.closestNote(peek*self.resolution)});
 };
 
-Tuner.prototype.run = function(stream) {
-  var self     = this;
-  self.samples = new Float32Array(this.bufferSize);
-  var context  = new AudioContext();
+var defaultTuner = new Tuner();
 
-  var source    = context.createMediaStreamSource(stream);
-  var lowpass   = context.createBiquadFilter();
-  var highpass  = context.createBiquadFilter();
-  var processor = context.createScriptProcessor(this.windowSize,1,1);
-
-  processor.onaudioprocess = function(event) {
-    var input = event.inputBuffer.getChannelData(0);
-    
-    for(var i = input.length ; i < self.bufferSize ; i++){
-      self.samples[i - self.fftSize] = self.samples[i];
-    }
-    
-    for(var i = 0 ; i < input.length ; i++){
-      self.samples[self.samples.length - self.fftSize + i] = input[i];
-    }
-    
-    event.outputBuffer.getChannelData(0).set(input);
-  };
-  
-  lowpass.type      = "lowpass";
-  lowpass.frequency = (self.sampleRate / 2).toFixed(3);
-  
-  highpass.type      = "highpass";
-  highpass.frequency = 35;
-
-  source.connect(lowpass);
-  lowpass.connect(highpass);
-  highpass.connect(processor);
-  processor.connect(context.destination);
-
-  return window.setInterval(this.fundamental.bind(this),
-                            this.tWindow.toFixed(3) * 1000);
+this.onmessage = function(event){
+  defaultTuner.fundamental(event.data.current);
 };
