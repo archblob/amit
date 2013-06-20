@@ -109,7 +109,6 @@ Tuner.prototype.hps = function(spectrum, opt_h) {
 };
 
 Tuner.prototype.fundamental = function(samples){
-  var self = this;
 
   var hamm = new WindowFunction(DSP.HAMMING);
   var fft  = new FFT(this.fftSize,this.sampleRate);
@@ -128,7 +127,7 @@ Tuner.prototype.fundamental = function(samples){
   var spectrum = fft.spectrum;
   var peek     = this.hps(spectrum);
 
-  postMessage({ peek : self.closestNote(peek*self.resolution)});
+  postMessage({ peek : this.closestNote(peek*this.resolution)});
 };
 
 var defaultTuner = new Tuner();

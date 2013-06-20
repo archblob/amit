@@ -64,30 +64,29 @@ CentsView.prototype.background = function() {
 };
 
 CentsView.prototype.run = function() {
-  var self = this;
 
-  var arc  = self.quadrantArc - this.cents;
-  var alfa = arc / self.radius;
+  var arc  = this.quadrantArc - this.cents;
+  var alfa = arc / this.radius;
 
-  var x = self.centerX + self.radius * Math.cos(alfa);
-  var y = self.centerY - self.radius * Math.sin(alfa);
+  var x = this.centerX + this.radius * Math.cos(alfa);
+  var y = this.centerY - this.radius * Math.sin(alfa);
 
-  self.ctx.clearRect(0,0,self.canvas.width,self.canvas.height);
+  this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
 
-  self.background();
+  this.background();
 
-  self.ctx.font      = self.noteFont;
-  self.ctx.fillStyle = self.color;
-  self.ctx.fillText(this.noteName,20,50);
+  this.ctx.font      = this.noteFont;
+  this.ctx.fillStyle = this.color;
+  this.ctx.fillText(this.noteName,20,50);
 
-  self.ctx.font = self.freqFont;
-  self.ctx.fillText(self.frequency.toFixed(2) + " Hz",self.canvas.width-110,40);
+  this.ctx.font = this.freqFont;
+  this.ctx.fillText(this.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
 
-  self.ctx.beginPath();
-  self.ctx.moveTo(self.centerX,self.centerY);
-  self.ctx.lineTo(x,y);
-  self.ctx.strokeStyle = self.needleColor;
-  self.ctx.stroke();
+  this.ctx.beginPath();
+  this.ctx.moveTo(this.centerX,this.centerY);
+  this.ctx.lineTo(x,y);
+  this.ctx.strokeStyle = this.needleColor;
+  this.ctx.stroke();
 
   window.requestAnimationFrame(this.run.bind(this));
 };
@@ -96,4 +95,4 @@ CentsView.prototype.update = function(peek){
   this.cents     = peek.cents;
   this.frequency = peek.frequency;
   this.noteName  = peek.note.name;
-}
+};
