@@ -4,8 +4,6 @@
  * thought that we can at least cover 24 frets.
  */
 
-importScripts("../lib/dsp.js");
-
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
   [46.25,"F#1"],  [49.00,"G1"],
@@ -40,16 +38,19 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
-function Tuner() {
-  this.streamSampleRate = 44100;
-  this.downsampleFactor = 20;
-  this.fftSize          = 512;
-  this.sampleRate       = this.streamSampleRate / this.downsampleFactor;
-  this.resolution       = this.sampleRate / this.fftSize;
-  this.bufferSize       = this.fftSize * this.downsampleFactor;
-  this.windowSize       = 512;
-  this.tWindow          = this.bufferSize / this.streamSampleRate;
-  this.frequencies      = frequencies.map(this.fromFreqArray);
+function Tuner(callback) {
+  this.strSampleRate  = 44100;
+  this.dsFactor       = 20;
+  this.fftSize        = 512;
+  this.samplerate     = this.strSampleRate / this.dsFactor;
+  this.resolution     = this.samplerate / this.fftSize;
+  this.bufferSize     = this.fftSize * this.dsFactor;
+  this.windowSize     = 512;
+  this.tWindow        = this.bufferSize / this.strSampleRate;
+  this.frequencies    = frequencies.map(this.fromFreqArray);
+
+  this.retCallback  = callback;
+  this.samples      = new Float32Array(this.bufferSize);
 };
 
 Tuner.prototype.fromFreqArray = function(e,i,obj) {
@@ -80,9 +81,10 @@ Tuner.prototype.closestNote = function(freq) {
 
   var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
 
-  return { "note"  : closestNote,
-           "cents" : cents,
-           "frequency" : freq
+  return { 
+    "note"      : closestNote,
+    "cents"     : cents,
+    "frequency" : freq
   };
 };
 
@@ -108,18 +110,18 @@ Tuner.prototype.hps = function(spectrum, opt_h) {
   return peek;
 };
 
-Tuner.prototype.fundamental = function(samples){
+Tuner.prototype.fundamental = function(){
 
   var hamm = new WindowFunction(DSP.HAMMING);
-  var fft  = new FFT(this.fftSize,this.sampleRate);
-  var step = this.downsampleFactor;
+  var fft  = new FFT(this.fftSize,this.samplerate);
+  var step = this.dsFactor;
 
-  hamm.process(samples);
+  hamm.process(this.samples);
 
   var downsampled = [];
 
   for (var i=0; i < this.bufferSize ; i += step){
-    downsampled.push(samples[i]);
+    downsampled.push(this.samples[i]);
   }
 
   fft.forward(downsampled);
@@ -127,11 +129,44 @@ Tuner.prototype.fundamental = function(samples){
   var spectrum = fft.spectrum;
   var peek     = this.hps(spectrum);
 
-  postMessage({ peek : this.closestNote(peek*this.resolution)});
+  this.retCallback({
+      peek : this.closestNote(peek*this.resolution),
+      spectrum : spectrum
+  });
 };
 
-var defaultTuner = new Tuner();
+Tuner.prototype.run = function(stream){
+  var context  = new AudioContext();
+  
+  var source    = context.createMediaStreamSource(stream);
+  var lowpass   = context.createBiquadFilter();
+  var highpass  = context.createBiquadFilter();
+  var processor = context.createScriptProcessor(this.windowSize,1,1);
 
-this.onmessage = function(event){
-  defaultTuner.fundamental(event.data.current);
+  lowpass.type       = "lowpass";
+  highpass.type      = "highpass";
+  lowpass.frequency  = (this.samplerate / 2).toFixed(3);
+  highpass.frequency = 35;
+
+  processor.onaudioprocess = function(event) {
+    var input = event.inputBuffer.getChannelData(0);
+
+    for(var i = input.length ; i < this.bufferSize ; i++){
+      this.samples[i - this.windowSize] = this.samples[i];
+    }
+
+    for(var i = 0 ; i < input.length ; i++){
+      this.samples[this.samples.length - this.windowSize + i] = input[i];
+    }
+
+    event.outputBuffer.getChannelData(0).set(input);
+  }.bind(this);
+
+  source.connect(lowpass);
+  lowpass.connect(highpass);
+  highpass.connect(processor);
+  processor.connect(context.destination);
+  
+  return window.setInterval(this.fundamental.bind(this),
+                            this.tWindow.toFixed(3) * 1000);
 };

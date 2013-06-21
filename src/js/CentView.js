@@ -9,13 +9,15 @@
 
 window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
-function CentsView(canvasID) {
+function CentsView(canvasID, getData) {
       this.canvas = document.getElementById(canvasID);
       this.ctx    = this.canvas.getContext('2d');
+      
+      this.getData = getData;
 
       this.lastCents     = 0;
       this.cents         = 0;
-      this.noteName      = "T";
+      this.noteName      = "Test";
       this.frequency     = 0.00;
       
       this.centerX       = this.canvas.width / 2;
@@ -91,8 +93,41 @@ CentsView.prototype.run = function() {
   window.requestAnimationFrame(this.run.bind(this));
 };
 
-CentsView.prototype.update = function(peek){
-  this.cents     = peek.cents;
-  this.frequency = peek.frequency;
-  this.noteName  = peek.note.name;
+CentsView.prototype.update = function(){
+  /* To BE IMPLEMENTED, SMOOTH NEEDLE
+  var peek        = event.data.peek;
+  var lastCents   = centsView.lastCents;
+  var scaledCents = Math.floor(peek.cents / 50 * centsView.quadrantArc);
+  var step = (scaledCents - lastCents) / Math.abs(scaledCents - lastCents);
+  var st;
+
+  function condition(i){
+    if (lastCents < scaledCents){
+      return i < scaledCents;
+    } else {
+       return i > scaledCents;
+    }
+  }
+
+  function loop(){
+    if(condition(lastCents)){
+      peek.cents = lastCents;
+      centsView.update(peek);
+       lastCents += step;
+    } else {
+      window.clearInterval(st);
+    }
+  }
+  */
+  var res = this.getData();
+  
+  if(res){
+    var peek = res.peek;
+    
+    this.cents     = peek.cents;
+    this.frequency = peek.frequency;
+    this.noteName  = peek.note.name;
+  }
+  
+  window.setTimeout(this.update.bind(this),100);
 };
