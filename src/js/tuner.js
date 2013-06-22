@@ -63,20 +63,33 @@ Tuner.prototype.fromFreqArray = function(e,i,obj) {
 };
 
 Tuner.prototype.closestNote = function(freq) {
-  /* The note array is small enough to use
-   * linear search.
+  /* Do a binary search on the frequency array and
+   * return closest match;
    */
-  var noteArray     = this.frequencies;
-  var minDifference = Math.abs (noteArray[0].frequency - freq);
-  var closestNote   = noteArray[0];
+  var noteList    = this.frequencies;
+  var closestNote = noteList[0];
 
-  for(n in this.frequencies){
-    var currentDifference = Math.abs(noteArray[n].frequency - freq);
+  var min = 0;
+  var max = noteList.length - 1;
+  var mid = 0;
+  var midFreq     = closestNote.frequency;
+  var succMidFreq = noteList[1].frequency;
 
-    if(currentDifference < minDifference){
-      minDifference = currentDifference;
-      closestNote   = noteArray[n];
-    }
+  while(min <= max){
+    mid = (max + min) >> 1;
+    midFreq     = noteList[mid].frequency;
+    succMidFreq = noteList[mid+1].frequency;
+  
+    if(max == min || midFreq == freq){
+      if(Math.abs(freq - midFreq) > Math.abs(freq - succMidFreq)){
+          closestNote = noteList[mid+1];
+      } else {
+          closestNote = noteList[mid];
+        }
+      }
+    
+    if(midFreq < freq)  min = mid + 1;
+    if(midFreq > freq)  max = mid - 1;
   }
 
   var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
