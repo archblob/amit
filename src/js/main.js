@@ -25,7 +25,7 @@ if (window.AudioContext && navigator.getUserMedia){
     function(stream){
       var readings = new IQueue();
       var tuner    = new Tuner(readings.enqueue.bind(readings));
-      var view     = new CentsView("centsView", readings.dequeue.bind(readings));
+      var view     = new CentsView("view", readings.dequeue.bind(readings));
       
       view.run();
       tuner.run(stream);
