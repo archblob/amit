@@ -9,10 +9,16 @@
 
 window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
-function CentsView(canvasID, getData) {
-      this.canvas = document.getElementById(canvasID);
+function CentsView(containerID, getData) {
+      this.canvas        = document.createElement('canvas');
+      this.canvas.id     = 'gtunerView'; 
+      this.canvas.width  = 400;
+      this.canvas.height = 200;
+
+      document.getElementById(containerID).appendChild(this.canvas);
+
       this.ctx    = this.canvas.getContext('2d');
-      
+
       this.getData = getData;
 
       this.lastCents     = 0;
