@@ -39,9 +39,18 @@ frequencies = [
 ];
 
 function windowHann(v,i,length) {
-  var twoPi = 2 * Math.Pi;
+  var twoPI = 2 * Math.PI;
   
-  return 0.5 * ( 1 - Math.cos(twoPi * n / (length - 1) ));
+  return 0.5 * ( 1 - Math.cos(twoPI * i / (length - 1) ));
+}
+
+function windowHamming(v,i,length) {
+  var twoPI = 2 * Math.PI;
+
+  var alfa = 0.54;
+  var beta = 0.46; /* 1 - alfa */
+
+  return alfa - beta * Math.cos(twoPI * i / (length - 1) );
 }
 
 function Tuner(callback) {
