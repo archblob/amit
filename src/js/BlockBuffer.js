@@ -76,3 +76,21 @@ BlockBuffer.prototype.addBlock = function(block){
     }
     
 };
+
+BlockBuffer.prototype.map = function (callback) {
+
+  var value;
+  var relativeIndex;
+  
+  for(var i = 0 ; i < this.blocks; i++){
+    for(var j = 0 ; j < this.blockSize; j++){
+
+      value         = this.buffer[i][j];
+      relativeIndex = this.blockSize * i + j;
+      
+      this.buffer[i][j] = callback(value, relativeIndex, this.length);
+
+    }
+  }
+
+};
