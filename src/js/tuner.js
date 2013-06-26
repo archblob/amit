@@ -38,6 +38,12 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
+function windowHann(v,i,length) {
+  var twoPi = 2 * Math.Pi;
+  
+  return 0.5 * ( 1 - Math.cos(twoPi * n / (length - 1) ));
+}
+
 function Tuner(callback) {
   this.strSampleRate  = 44100;
   this.dsFactor       = 20;
