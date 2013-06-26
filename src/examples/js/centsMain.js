@@ -9,15 +9,17 @@ navigator.getUserMedia =
 if (window.AudioContext && navigator.getUserMedia){
 
   navigator.getUserMedia({audio : true},
-    function(stream){
+    function (stream) {
+
       var readings = new IQueue();
       var tuner    = new Tuner(readings.enqueue.bind(readings));
       var view     = new CentsView("viewContainer", readings.dequeue.bind(readings));
-      
+
       view.run();
       tuner.run(stream);
       view.update();
-  },function(e){
+
+  }, function (e) {
     console.log(e);
   });
 } else {

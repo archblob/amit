@@ -1,12 +1,12 @@
 /* Inefficient Queue */
 function IQueue() {
-  this.queue = new Array();
+  this.queue = [];
 }
 
-IQueue.prototype.enqueue = function(element) {
+IQueue.prototype.enqueue = function (element) {
   this.queue.push(element);
 };
 
-IQueue.prototype.dequeue = function() {
+IQueue.prototype.dequeue = function () {
   return this.queue.shift();
 };

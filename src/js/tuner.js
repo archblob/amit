@@ -40,7 +40,7 @@ frequencies = [
 
 function windowHann(v,i,length) {
   var twoPI = 2 * Math.PI;
-  
+
   return 0.5 * ( 1 - Math.cos(twoPI * i / (length - 1) ));
 }
 
@@ -68,7 +68,7 @@ function Tuner(callback) {
   this.samples      = new Float32Array(this.bufferSize);
 };
 
-Tuner.prototype.fromFreqArray = function(e,i,obj) {
+Tuner.prototype.fromFreqArray = function (e,i,obj) {
   var note = new Object();
 
   note.frequency = e[0];
@@ -77,7 +77,7 @@ Tuner.prototype.fromFreqArray = function(e,i,obj) {
   return note;
 };
 
-Tuner.prototype.closestNote = function(freq) {
+Tuner.prototype.closestNote = function (freq) {
   /* Do a binary search on the frequency array and
    * return closest match;
    */
@@ -90,13 +90,13 @@ Tuner.prototype.closestNote = function(freq) {
   var midFreq     = closestNote.frequency;
   var succMidFreq = noteList[1].frequency;
 
-  while(min <= max){
+  while (min <= max) {
     mid = (max + min) >> 1;
     midFreq     = noteList[mid].frequency;
     succMidFreq = noteList[mid+1].frequency;
   
-    if(max == min || midFreq == freq){
-      if(Math.abs(freq - midFreq) > Math.abs(freq - succMidFreq)){
+    if (max == min || midFreq == freq) {
+      if (Math.abs(freq - midFreq) > Math.abs(freq - succMidFreq)) {
           closestNote = noteList[mid+1];
       } else {
           closestNote = noteList[mid];
@@ -116,21 +116,21 @@ Tuner.prototype.closestNote = function(freq) {
   };
 };
 
-Tuner.prototype.hps = function(spectrum, opt_h) {
+Tuner.prototype.hps = function (spectrum, opt_h) {
   var opt_harmonics = 3;
 
-  if(opt_h){
+  if (opt_h) {
     opt_harmonics = opt_h;
   }
 
   var peek = 1;
 
-  for(var i=1; i < (spectrum.length/opt_harmonics); i++){
-    for(var j = 1; j < opt_harmonics; j++){
+  for (var i=1; i < (spectrum.length/opt_harmonics); i++) {
+    for (var j = 1; j < opt_harmonics; j++) {
         spectrum[i] *= spectrum[i*j];
     }
 
-    if (spectrum[i] > spectrum[peek]){
+    if (spectrum[i] > spectrum[peek]) {
       peek = i;
     }
   }
@@ -138,7 +138,7 @@ Tuner.prototype.hps = function(spectrum, opt_h) {
   return peek;
 };
 
-Tuner.prototype.fundamental = function(){
+Tuner.prototype.fundamental = function () {
 
   var hamm = new WindowFunction(DSP.HAMMING);
   var fft  = new FFT(this.fftSize,this.samplerate);
@@ -148,7 +148,7 @@ Tuner.prototype.fundamental = function(){
 
   var downsampled = [];
 
-  for (var i=0; i < this.bufferSize ; i += step){
+  for (var i=0; i < this.bufferSize ; i += step) {
     downsampled.push(this.samples[i]);
   }
 
@@ -163,7 +163,7 @@ Tuner.prototype.fundamental = function(){
   });
 };
 
-Tuner.prototype.run = function(stream){
+Tuner.prototype.run = function (stream) {
   var context  = new AudioContext();
   
   var source    = context.createMediaStreamSource(stream);
@@ -176,14 +176,14 @@ Tuner.prototype.run = function(stream){
   lowpass.frequency  = (this.samplerate / 2).toFixed(3);
   highpass.frequency = 35;
 
-  processor.onaudioprocess = function(event) {
+  processor.onaudioprocess = function (event) {
     var input = event.inputBuffer.getChannelData(0);
 
-    for(var i = input.length ; i < this.bufferSize ; i++){
+    for (var i = input.length ; i < this.bufferSize ; i++) {
       this.samples[i - this.windowSize] = this.samples[i];
     }
 
-    for(var i = 0 ; i < input.length ; i++){
+    for (var i = 0 ; i < input.length ; i++) {
       this.samples[this.samples.length - this.windowSize + i] = input[i];
     }
 
