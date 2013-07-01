@@ -40,8 +40,9 @@ frequencies = [
 
 function windowHann(v,i,length) {
   var twoPI = 2 * Math.PI;
+  var sc    = 0.5 * (1 - Math.cos(twoPI * i / (length - 1)));
 
-  return 0.5 * ( 1 - Math.cos(twoPI * i / (length - 1) ));
+  return v * sc;
 }
 
 function windowHamming(v,i,length) {
@@ -49,8 +50,9 @@ function windowHamming(v,i,length) {
 
   var alfa = 0.54;
   var beta = 0.46; /* 1 - alfa */
+  var sc   = alfa - beta * Math.cos(twoPI * i / (length - 1));
 
-  return alfa - beta * Math.cos(twoPI * i / (length - 1) );
+  return v * sc;
 }
 
 function Tuner(callback) {
