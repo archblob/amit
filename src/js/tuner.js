@@ -81,30 +81,51 @@ Tuner.prototype.closestNote = function (freq) {
   /* Do a binary search on the frequency array and
    * return closest match;
    */
+  /* TODO : throw exception if the frequencies array is empty */
   var noteList    = this.frequencies;
+  var length      = noteList.length;
   var closestNote = noteList[0];
 
   var min = 0;
-  var max = noteList.length - 1;
+  var max = length - 1;
   var mid = 0;
-  var midFreq     = closestNote.frequency;
-  var succMidFreq = noteList[1].frequency;
+  var midFreq = 0;
 
   while (min <= max) {
+
     mid = (max + min) >> 1;
     midFreq     = noteList[mid].frequency;
-    succMidFreq = noteList[mid+1].frequency;
-  
-    if (max == min || midFreq == freq) {
-      if (Math.abs(freq - midFreq) > Math.abs(freq - succMidFreq)) {
-          closestNote = noteList[mid+1];
-      } else {
-          closestNote = noteList[mid];
-        }
-      }
-    
+
     if(midFreq < freq)  min = mid + 1;
     if(midFreq > freq)  max = mid - 1;
+
+  }
+
+  var succ = mid + 1;
+  var pred = mid - 1;
+
+  var midDiff  = Math.abs(freq - midFreq);
+  var succFreq = 0;
+  var succDiff = 0;
+  var predFreq = 0;
+  var predDiff = 0;
+
+  if (succ >= 0 && succ < length) {
+    succFreq = noteList[succ].frequency;
+    succDiff = Math.abs(freq - succFreq);
+  }
+
+  if (pred >= 0 && pred < length) {
+    predFreq = noteList[pred].frequency;
+    predDiff = Math.abs(freq - predFreq);
+  }
+
+  if (succFreq && (midDiff > succDiff)){
+    closestNote = noteList[mid+1];
+  } else if (predFreq && (midDiff > predDiff)) {
+    closestNote = noteList[mid-1];
+  } else {
+    closestNote = noteList[mid];
   }
 
   var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
