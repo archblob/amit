@@ -68,11 +68,11 @@ BlockBuffer.prototype.addBlock = function (block) {
     if (blength < this.blockSize || blength > this.blockSize) {
         throw new ImproperBlockLength(this.blockSize, blength);
     } else {
-        for (var i = 1; i < this.length ; i++) {
+        for (var i = 1; i < this.blocks ; i++) {
             this.buffer[i-1] = this.buffer[i];
         }
         
-        this.buffer[blocks - 1] = block;
+        this.buffer[this.blocks - 1] = block;
     }
 
 };
