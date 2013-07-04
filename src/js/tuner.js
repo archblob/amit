@@ -4,6 +4,8 @@
  * thought that we can at least cover 24 frets.
  */
 
+var twoPI = 2 * Math.PI;
+
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
   [46.25,"F#1"],  [49.00,"G1"],
@@ -39,14 +41,12 @@ frequencies = [
 ];
 
 function windowHann(v,i,length) {
-  var twoPI = 2 * Math.PI;
-  var sc    = 0.5 * (1 - Math.cos(twoPI * i / (length - 1)));
+  var sc    = 0.5 * (1 - Math.cos(towPI * i / (length - 1)));
 
   return v * sc;
 }
 
 function windowHamming(v,i,length) {
-  var twoPI = 2 * Math.PI;
 
   var alfa = 0.54;
   var beta = 0.46; /* 1 - alfa */
@@ -67,7 +67,7 @@ function Tuner(callback) {
   this.frequencies    = frequencies.map(this.fromFreqArray);
 
   this.retCallback  = callback;
-  this.samples      = new Float32Array(this.bufferSize);
+  this.samples      = new Ring(this.bufferSize, this.windowSize);
 };
 
 Tuner.prototype.fromFreqArray = function (e,i,obj) {
@@ -162,17 +162,15 @@ Tuner.prototype.hps = function (spectrum, opt_h) {
 };
 
 Tuner.prototype.fundamental = function () {
-
-  var hamm = new WindowFunction(DSP.HAMMING);
   var fft  = new FFT(this.fftSize,this.samplerate);
   var step = this.dsFactor;
 
-  hamm.process(this.samples);
+  this.samples.map(windowHann);
 
   var downsampled = [];
 
-  for (var i=0; i < this.bufferSize ; i += step) {
-    downsampled.push(this.samples[i]);
+  for (var i=0; i < this.samples.length ; i += step) {
+    downsampled.push(this.samples.get(i));
   }
 
   fft.forward(downsampled);
@@ -202,13 +200,7 @@ Tuner.prototype.run = function (stream) {
   processor.onaudioprocess = function (event) {
     var input = event.inputBuffer.getChannelData(0);
 
-    for (var i = input.length ; i < this.bufferSize ; i++) {
-      this.samples[i - this.windowSize] = this.samples[i];
-    }
-
-    for (var i = 0 ; i < input.length ; i++) {
-      this.samples[this.samples.length - this.windowSize + i] = input[i];
-    }
+    this.samples.concat(input);
 
     event.outputBuffer.getChannelData(0).set(input);
   }.bind(this);
