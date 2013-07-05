@@ -10,37 +10,37 @@
 window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
 function CentsView(containerID, getData) {
-      this.canvas        = document.createElement('canvas');
-      this.canvas.id     = 'gtunerView'; 
-      this.canvas.width  = 400;
-      this.canvas.height = 200;
+  this.canvas        = document.createElement('canvas');
+  this.canvas.id     = 'gtunerView'; 
+  this.canvas.width  = 400;
+  this.canvas.height = 200;
 
-      document.getElementById(containerID).appendChild(this.canvas);
+  document.getElementById(containerID).appendChild(this.canvas);
 
-      this.ctx    = this.canvas.getContext('2d');
+  this.ctx    = this.canvas.getContext('2d');
 
-      this.getData = getData;
+  this.getData = getData;
 
-      this.lastCents     = 0;
-      this.cents         = 0;
-      this.noteName      = "Test";
-      this.frequency     = 0.00;
-      
-      this.centerX       = this.canvas.width / 2;
-      this.centerY       = this.canvas.height;
-      this.circumference = 1000;
-      this.radius        = this.circumference / (2*Math.PI);
-      this.quadrantArc   = this.circumference / 4;
-      
-      this.color         = "rgb(58,58,58)";
-      this.noteFont      = "50px sans-serif";
-      this.freqFont      = "20px sans-serif";
-      this.needleColor   = "rgb(58,58,58)";
-      this.dotColor      = "rgb(58,58,58)";
-      this.dotRadius     = 3;
-      this.zeroDotColor  = "rgb(44,114,158)";
-      this.zeroDotRadius = 5;
-      this.markStep      = 50;
+  this.lastCents     = 0;
+  this.cents         = 0;
+  this.noteName      = "Test";
+  this.frequency     = 0.00;
+
+  this.centerX       = this.canvas.width / 2;
+  this.centerY       = this.canvas.height;
+  this.circumference = 1000;
+  this.radius        = this.circumference / (2*Math.PI);
+  this.quadrantArc   = this.circumference / 4;
+
+  this.color         = "rgb(58,58,58)";
+  this.noteFont      = "50px sans-serif";
+  this.freqFont      = "20px sans-serif";
+  this.needleColor   = "rgb(58,58,58)";
+  this.dotColor      = "rgb(58,58,58)";
+  this.dotRadius     = 3;
+  this.zeroDotColor  = "rgb(44,114,158)";
+  this.zeroDotRadius = 5;
+  this.markStep      = 50;
 };
 
 CentsView.prototype.background = function() {
