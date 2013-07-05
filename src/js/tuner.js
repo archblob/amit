@@ -41,7 +41,7 @@ frequencies = [
 ];
 
 function windowHann(v,i,length) {
-  var sc    = 0.5 * (1 - Math.cos(towPI * i / (length - 1)));
+  var sc    = 0.5 * (1 - Math.cos(twoPI * i / (length - 1)));
 
   return v * sc;
 }
@@ -66,6 +66,7 @@ function Tuner(callback) {
   this.tWindow        = this.bufferSize / this.strSampleRate;
   this.frequencies    = frequencies.map(this.fromFreqArray);
 
+  this.fft = new FFT(this.fftSize,this.samplerate);
   this.retCallback  = callback;
   this.samples      = new Ring(this.bufferSize, this.windowSize);
 };
@@ -162,7 +163,6 @@ Tuner.prototype.hps = function (spectrum, opt_h) {
 };
 
 Tuner.prototype.fundamental = function () {
-  var fft  = new FFT(this.fftSize,this.samplerate);
   var step = this.dsFactor;
 
   this.samples.map(windowHann);
@@ -173,9 +173,9 @@ Tuner.prototype.fundamental = function () {
     downsampled.push(this.samples.get(i));
   }
 
-  fft.forward(downsampled);
+  this.fft.forward(downsampled);
 
-  var spectrum = fft.spectrum;
+  var spectrum = this.fft.spectrum;
   var peek     = this.hps(spectrum);
 
   this.retCallback({

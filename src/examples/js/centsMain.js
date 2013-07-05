@@ -11,13 +11,12 @@ if (window.AudioContext && navigator.getUserMedia){
   navigator.getUserMedia({audio : true},
     function (stream) {
 
-      var readings = new IQueue();
-      var tuner    = new Tuner(readings.enqueue.bind(readings));
-      var view     = new CentsView("viewContainer", readings.dequeue.bind(readings));
+      var view     = new CentsView("viewContainer");
+      var tuner    = new Tuner(view.update.bind(view));
 
       view.run();
       tuner.run(stream);
-      view.update();
+      view.watch();
 
   }, function (e) {
     console.log(e);

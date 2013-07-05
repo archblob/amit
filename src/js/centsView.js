@@ -9,7 +9,7 @@
 
 window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
-function CentsView(containerID, getData) {
+function CentsView(containerID) {
   this.canvas        = document.createElement('canvas');
   this.canvas.id     = 'gtunerView'; 
   this.canvas.width  = 400;
@@ -17,14 +17,12 @@ function CentsView(containerID, getData) {
 
   document.getElementById(containerID).appendChild(this.canvas);
 
-  this.ctx    = this.canvas.getContext('2d');
-
-  this.getData = getData;
-
-  this.lastCents     = 0;
-  this.cents         = 0;
-  this.noteName      = "Test";
-  this.frequency     = 0.00;
+  this.ctx  = this.canvas.getContext('2d');
+  this.peek = { note : { name : "Init",
+                         frequency : 0.00},
+                cents : 0,
+                frequency : 0.00
+   };
 
   this.centerX       = this.canvas.width / 2;
   this.centerY       = this.canvas.height;
@@ -73,7 +71,7 @@ CentsView.prototype.background = function() {
 
 CentsView.prototype.run = function() {
 
-  var arc  = this.quadrantArc - this.cents;
+  var arc  = this.quadrantArc - this.peek.cents;
   var alfa = arc / this.radius;
 
   var x = this.centerX + this.radius * Math.cos(alfa);
@@ -85,10 +83,10 @@ CentsView.prototype.run = function() {
 
   this.ctx.font      = this.noteFont;
   this.ctx.fillStyle = this.color;
-  this.ctx.fillText(this.noteName,20,50);
+  this.ctx.fillText(this.peek.note.name,20,50);
 
   this.ctx.font = this.freqFont;
-  this.ctx.fillText(this.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
+  this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
 
   this.ctx.beginPath();
   this.ctx.moveTo(this.centerX,this.centerY);
@@ -99,41 +97,7 @@ CentsView.prototype.run = function() {
   window.requestAnimationFrame(this.run.bind(this));
 };
 
-CentsView.prototype.update = function(){
-  /* To BE IMPLEMENTED, SMOOTH NEEDLE
-  var peek        = event.data.peek;
-  var lastCents   = centsView.lastCents;
-  var scaledCents = Math.floor(peek.cents / 50 * centsView.quadrantArc);
-  var step = (scaledCents - lastCents) / Math.abs(scaledCents - lastCents);
-  var st;
+CentsView.prototype.update = function (element) {
 
-  function condition(i){
-    if (lastCents < scaledCents){
-      return i < scaledCents;
-    } else {
-       return i > scaledCents;
-    }
-  }
-
-  function loop(){
-    if(condition(lastCents)){
-      peek.cents = lastCents;
-      centsView.update(peek);
-       lastCents += step;
-    } else {
-      window.clearInterval(st);
-    }
-  }
-  */
-  var res = this.getData();
-  
-  if(res){
-    var peek = res.peek;
-    
-    this.cents     = peek.cents;
-    this.frequency = peek.frequency;
-    this.noteName  = peek.note.name;
-  }
-  
-  window.setTimeout(this.update.bind(this),100);
+  this.peek = element.peek;
 };
