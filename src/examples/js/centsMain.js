@@ -16,7 +16,6 @@ if (window.AudioContext && navigator.getUserMedia){
 
       view.run();
       tuner.run(stream);
-      view.watch();
 
   }, function (e) {
     console.log(e);
