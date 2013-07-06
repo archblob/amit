@@ -11,15 +11,24 @@
 
   window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
-  function CentsView(containerID) {
-    this.canvas        = document.createElement('canvas');
-    this.canvas.id     = 'gtunerView'; 
-    this.canvas.width  = 400;
-    this.canvas.height = 200;
+  function ViewContextAndStyle (containerID) {
+    this.canvas    = document.createElement('canvas');
+    this.canvas.id = 'gtunerView';
 
     document.getElementById(containerID).appendChild(this.canvas);
 
     this.ctx  = this.canvas.getContext('2d');
+
+    this.color         = "rgb(58,58,58)";
+    this.noteFont      = "50px sans-serif";
+    this.freqFont      = "20px sans-serif";
+  }
+
+  function CentsView(containerID) {
+    this = new ViewContextAndStyle(containerID);
+    this.canvas.width  = 400;
+    this.canvas.height = 200;
+
     this.peek = { note : { name : "Init",
                            frequency : 0.00},
                   cents : 0,
@@ -32,9 +41,6 @@
     this.radius        = this.circumference / (2*Math.PI);
     this.quadrantArc   = this.circumference / 4;
 
-    this.color         = "rgb(58,58,58)";
-    this.noteFont      = "50px sans-serif";
-    this.freqFont      = "20px sans-serif";
     this.needleColor   = "rgb(58,58,58)";
     this.dotColor      = "rgb(58,58,58)";
     this.dotRadius     = 3;
