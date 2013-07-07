@@ -12,22 +12,24 @@
   window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
   function ViewContextAndStyle (containerID) {
-    this.canvas    = document.createElement('canvas');
-    this.canvas.id = 'gtunerView';
+    this.cvs    = document.createElement('canvas');
+    this.cvs.id = 'gtunerView';
 
-    document.getElementById(containerID).appendChild(this.canvas);
+    document.getElementById(containerID).appendChild(this.cvs);
 
-    this.ctx  = this.canvas.getContext('2d');
+    this.ctx  = this.cvs.getContext('2d');
 
     this.color         = "rgb(58,58,58)";
     this.noteFont      = "50px sans-serif";
     this.freqFont      = "20px sans-serif";
   }
 
-  function CentsView(containerID) {
-    this = new ViewContextAndStyle(containerID);
-    this.canvas.width  = 400;
-    this.canvas.height = 200;
+  function CentsView() {
+
+    ViewContextAndStyle.apply(this,arguments);
+
+    this.cvs.width  = 400;
+    this.cvs.height = 200;
 
     this.peek = { note : { name : "Init",
                            frequency : 0.00},
@@ -35,8 +37,8 @@
                   frequency : 0.00
      };
 
-    this.centerX       = this.canvas.width / 2;
-    this.centerY       = this.canvas.height;
+    this.centerX       = this.cvs.width / 2;
+    this.centerY       = this.cvs.height;
     this.circumference = 1000;
     this.radius        = this.circumference / (2*Math.PI);
     this.quadrantArc   = this.circumference / 4;
@@ -85,7 +87,7 @@
     var x = this.centerX + this.radius * Math.cos(alfa);
     var y = this.centerY - this.radius * Math.sin(alfa);
 
-    this.ctx.clearRect(0,0,this.canvas.width,this.canvas.height);
+    this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height);
 
     this.background();
 
@@ -94,7 +96,7 @@
     this.ctx.fillText(this.peek.note.name,20,50);
 
     this.ctx.font = this.freqFont;
-    this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.canvas.width-110,40);
+    this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.cvs.width-110,40);
 
     this.ctx.beginPath();
     this.ctx.moveTo(this.centerX,this.centerY);
