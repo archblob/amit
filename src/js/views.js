@@ -11,23 +11,70 @@
 
   window.requestAnimationFrame = window.webkitRequestAnimationFrame;
 
-  function ViewContextAndStyle (containerID) {
-    this.cvs    = document.createElement('canvas');
-    this.cvs.id = 'gtunerView';
+  var defaultColor = "rgb(58,58,58)";
 
-    document.getElementById(containerID).appendChild(this.cvs);
-
-    this.ctx  = this.cvs.getContext('2d');
-
-    this.peek = { note : { name : "Init",
-      frequency : 0.00},
+  var defaultPeek = {
+      note : {
+        name : "I",
+        frequency : 0.00
+      },
       cents : 0,
       frequency : 0.00
-    };
+  };
 
-    this.color         = "rgb(58,58,58)";
-    this.noteFont      = "50px sans-serif";
-    this.freqFont      = "20px sans-serif";
+
+  function ViewContextAndStyle (containerID) {
+
+    var _cvs = document.createElement("canvas");
+    _cvs.id = "gtunerView";
+
+    document.getElementById(containerID).appendChild(_cvs);
+
+    var _ctx = _cvs.getContext("2d");
+
+    var _peek     = defaultPeek;
+    var _color    = defaultColor;
+    var _noteFont = "50px sans-serif";
+    var _freqFont = "20px sans-serif";
+
+    Object.defineProperties(this, {
+      "cvs" : {
+        value        : _cvs,
+        configurable : false,
+        enumerable   : false,
+        writable     : false
+      },
+      "ctx" : {
+        value        : _ctx,
+        configurable : false,
+        enumerable   : false,
+        writable     : false
+      },
+      "peek" : {
+        value        : _peek,
+        configurable : false,
+        enumerable   : false,
+        writable     : true
+      },
+      "color" : {
+        value        : _color,
+        configurable : false,
+        enumerable   : false,
+        writable     : true
+      },
+      "noteFont" : {
+        value        : _noteFont,
+        configurable : false,
+        enumerable   : false,
+        writable     : true
+      },
+      "freqFont" : {
+        value        : _freqFont,
+        configurable : false,
+        enumerable   : false,
+        writable     : true
+      }
+    });
   }
 
   function CentsView() {
