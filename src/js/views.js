@@ -36,8 +36,13 @@
 
     var _peek     = defaultPeek;
     var _color    = defaultColor;
-    var _noteFont = "50px sans-serif";
-    var _freqFont = "20px sans-serif";
+    var _noteFontSize = 50;
+    var _freqFontSize = 20;
+    var _noteFontName = "sans-serif";
+    var _freqFontName = "sans-serif";
+      
+    var _noteFont = _noteFontSize + "px " + _noteFontName;
+    var _freqFont = _freqFontSize + "px " + _freqFontName;
 
     Object.defineProperties(this, {
       "cvs" : {
@@ -64,17 +69,63 @@
         enumerable   : false,
         writable     : true
       },
-      "noteFont" : {
-        value        : _noteFont,
+      "noteFont" : {/* TODO : throw exception when someone tries to set */
         configurable : false,
         enumerable   : false,
-        writable     : true
+        get          : function () {
+          return _noteFont;
+        }
       },
       "freqFont" : {
-        value        : _freqFont,
         configurable : false,
         enumerable   : false,
-        writable     : true
+        get          : function () {
+          return _freqFont;
+        }
+      },
+      "noteFontSize" : {
+        configurable : false,
+        enumerable   : false,
+        set          : function (val) {
+          _noteFontSize = val;
+          _noteFont = _noteFontSize + "px " + _noteFontName;
+        },
+        get          : function () {
+          return _noteFontSize;
+        }
+      },
+      "freqFontSize" : {
+        configurable : false,
+        enumerable   : false,
+        set          : function (val) {
+          _freqFontSize = val;
+          _freqFont = _freqFontSize + "px " + _freqFontName;
+        },
+        get          : function () {
+          return _freqFontSize;
+        }
+      },
+      "noteFontName" : {
+        configurable : false,
+        enumerable   : false,
+        set          : function (val) {
+          _noteFontName = val;
+          _noteFont = _noteFontSize + "px " + _noteFontName;
+        },
+        get          : function () {
+          return _noteFontName;
+        }
+      },
+      "freqFontName" : {
+        configurable : false,
+        enumerable   : false,
+        set          : function (val) {
+          _freqFontName = val;
+          _freqFont = _freqFontSize + "px " + _freqFontName;
+        },
+        get          : function () {
+          return _freqFontName;
+        }
       }
     });
   }
