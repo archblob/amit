@@ -16,7 +16,7 @@
   /* default color scheme */
   var green = "rgb(122,153,66)";
   var black = "rgb(58,58,58)";
-  var lightBlack = "rgba(58,58,58, 0.5)";
+  var lightBlack = "rgba(58,58,58, 0.2)";
   var white = "rgb(227,227,227)";
   var red   = "rgb(140,46,46)";
   var blue  = "rgb(44,114,158)";
@@ -257,27 +257,29 @@
 
     ViewContextAndStyle.apply(this, arguments);
 
-    var _width  = 200;
-    var _height = 100;
+    var _width  = 400;
+    var _height = 200;
 
     this.cvs.width  = _width;
     this.cvs.height = _height;
-    
-    this.noteFontSize = 0.6 * _height; 
-    this.freqFontSize = 0.2 * _height;
 
     var xpad = 10;
     var ypad = 10;
+
+    this.noteFontSize = _height - 2 * ypad; 
+    this.freqFontSize = 0.2 * _height;
 
     var semiMajorAxis = _width / 6;
     var semiMinorAxis = _height / 3;
 
     var cx = _width / 2;
     var cy = _height / 2;
-    var x  = _width - (semiMajorAxis + xpad);
+    var x  = _width - (semiMajorAxis + 2 * xpad);
 
     var verticalSepX  = cx + xpad;
     var verticalSepBY = _height - ypad;
+    var horizontalSepY = this.noteFontSize + 2 * ypad;
+
     var noteFontMaxWidth = cx - xpad;
 
     Object.defineProperties(this, {
@@ -312,6 +314,7 @@
           this.cvs.height = _height;
           semiMinorAxis   = _height / 3;
           verticalSepBY   = _height - ypad;
+          horizontalSepY  = this.noteFontSize + 2 * ypad;
 
           this.noteFontSize = 0.6 * _height; 
           this.freqFontSize = 0.2 * _height;
@@ -344,10 +347,10 @@
        value        : function () {
 
          this.ctx.textAlign    = 'left';
-         this.ctx.textBaseline = 'top';
+         this.ctx.textBaseline = 'middle';
          this.ctx.font         = this.noteFont;
 
-         this.ctx.fillText(this.peek.note.name, xpad, ypad, noteFontMaxWidth);
+         this.ctx.fillText(this.peek.note.name, xpad, cy, noteFontMaxWidth);
        },
        enumerable   : false,
        configurable : false,
@@ -372,15 +375,15 @@
        configurable : false,
        writable     : false
      },
-     "drawVerticalSeparator" : {
-       value        : function () {
+     "drawSeparator" : {
+       value        : function (x0, y0, x1, y1) {
 
          this.ctx.save();
 
          this.ctx.beginPath();
 
-         this.ctx.moveTo(verticalSepX, ypad);
-         this.ctx.lineTo(verticalSepX, verticalSepBY);
+         this.ctx.moveTo(x0, y0);
+         this.ctx.lineTo(x1, y1);
 
          this.ctx.strokeStyle = lightBlack;
          this.ctx.lineCap = "round";
@@ -393,6 +396,7 @@
        configurable : false,
        writable     : false
      },
+     
      "run" : {
        value        : function () {
 
@@ -401,7 +405,7 @@
 
          this.ctx.clearRect(0, 0, _width, _height);
 
-         this.drawVerticalSeparator();
+         this.drawSeparator(verticalSepX, ypad, verticalSepX, verticalSepBY);
          this.drawArrow(tuneDir);
          this.drawFrequency();
          this.drawNoteName();
