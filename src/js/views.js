@@ -9,7 +9,9 @@
 
 (function (global) {
 
-  window.requestAnimationFrame = window.webkitRequestAnimationFrame;
+  window.requestAnimationFrame =
+    window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
   var defaultColor = "rgb(58,58,58)";
 
