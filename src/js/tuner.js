@@ -25,13 +25,13 @@
     
     var _samplerate = 44100;
     
-    var _downsampleFactor    = 20;
-    var _fftSize             = 512;
+    var _downsampleFactor    = 12;
+    var _fftSize             = 2048;
     var _effectiveSamplerate = _samplerate / _downsampleFactor;
     var _frequencyResolution = _effectiveSamplerate / _fftSize;
     var _bufferSize          = _fftSize * _downsampleFactor;
     var _temporalWindow      = _bufferSize / _samplerate;
-    var _harmonics           = 3;
+    var _harmonics           = 5;
     
     var fft             = new FFT(_fftSize, _effectiveSamplerate);
     var samples         = new Ring(_bufferSize, 512);
