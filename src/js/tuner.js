@@ -4,8 +4,6 @@
  * thought that we can at least cover 24 frets.
  */
 
-var twoPI = 2 * Math.PI;
-
 frequencies = [
   [41.20,"E1"],   [43.65,"F1"],
   [46.25,"F#1"],  [49.00,"G1"],
@@ -40,21 +38,6 @@ frequencies = [
   [1318.51,"E6"]
 ];
 
-function windowHann(v,i,length) {
-  var sc    = 0.5 * (1 - Math.cos(twoPI * i / (length - 1)));
-
-  return v * sc;
-}
-
-function windowHamming(v,i,length) {
-
-  var alfa = 0.54;
-  var beta = 0.46; /* 1 - alfa */
-  var sc   = alfa - beta * Math.cos(twoPI * i / (length - 1));
-
-  return v * sc;
-}
-
 function Tuner(callback) {
   this.strSampleRate  = 44100;
   this.dsFactor       = 20;
@@ -69,6 +52,10 @@ function Tuner(callback) {
   this.fft = new FFT(this.fftSize,this.samplerate);
   this.retCallback  = callback;
   this.samples      = new Ring(this.bufferSize, this.windowSize);
+  this.windowFunction = new WindowObject();
+
+  this.windowFunction.type   = "Hann";
+  this.windowFunction.length = this.bufferSize;
 };
 
 Tuner.prototype.fromFreqArray = function (e,i,obj) {
@@ -165,7 +152,7 @@ Tuner.prototype.hps = function (spectrum, opt_h) {
 Tuner.prototype.fundamental = function () {
   var step = this.dsFactor;
 
-  this.samples.map(windowHann);
+  this.windowFunction.process(this.samples);
 
   var downsampled = [];
 
