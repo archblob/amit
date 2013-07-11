@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2013 Csernik Flaviu Andrei
+ *
+ * See the file LICENSE.txt for copying permission.
+ * 
+ */
+
 (function (global){
 
   "use strict";

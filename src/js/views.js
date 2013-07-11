@@ -1,10 +1,8 @@
 /*
- * Color Scheme :
- * green = rgb(122,153,66);
- * black = rgb(58,58,58);
- * white = rgb(227,227,227);
- * red   = rgb(140,46,46);
- * blue  = rgb(44,114,158);
+ * Copyright (c) 2013 Csernik Flaviu Andrei
+ *
+ * See the file LICENSE.txt for copying permission.
+ * 
  */
 
 (function (global) {

@@ -1,7 +1,14 @@
-/* 12-TET(12 Tone Equal Tempered scale */
-/* reference frequency default is A4 440 Hz*/
+/*
+ * Copyright (c) 2013 Csernik Flaviu Andrei
+ *
+ * See the file LICENSE.txt for copying permission.
+ * 
+ */
 
 (function (global) {
+
+  /* 12-TET(12 Tone Equal Tempered scale */
+  /* reference frequency default is A4 440 Hz*/
 
   "use strict";
 
