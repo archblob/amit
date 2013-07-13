@@ -17,7 +17,7 @@
 
   IndexOutOfBounds.prototype.toString = function () {
     return "Invalid index in method ['" + this.method + "']\n" +
-           "Requested index    : " + this.requestedIndex + 
+           "Requested index    : " + this.requestedIndex +
            "\nValid _buffer index : [0.." + this.maxIndex + "]";
   };
 
@@ -27,8 +27,8 @@
   }
 
   ImproperBlockLength.prototype.toString = function () {
-    return "Block length mismatch.\n" + 
-           "Requeste block length : " + this.givenBlockLength + "\n" + 
+    return "Block length mismatch.\n" +
+           "Requeste block length : " + this.givenBlockLength + "\n" +
            "Valid block length    : " + this.ringBlockLength;
   };
 
@@ -45,30 +45,31 @@
 
     if (blockLength) {
 
-      if (length % blockLength != 0) {
+      if (length % blockLength !== 0) {
         throw "Block length must be a factor of length.";
-      } else {
-        this._blockLength = blockLength;
       }
+
+      this._blockLength = blockLength;
 
     }
   }
 
   Ring.prototype.checkBounds = function (requested, callerName) {
 
-    if (requested < 0 || requested > this._maxIndex)
+    if (requested < 0 || requested > this._maxIndex) {
       throw new IndexOutOfBounds(this._maxIndex, requested, callerName);
+    }
   };
 
-  Ring.prototype.relativeIndex = function(index) {
+  Ring.prototype.relativeIndex = function (index) {
     return (this._start + index) % this.length;
   };
 
   /* Should not be used when there is a set _blockLength */
   Ring.prototype.push = function (element) {
-  
+
     this._buffer[this._start] = element;
-  
+
     var newStart = this._start + 1;
     this._start = newStart > this._maxIndex ? 0 : newStart;
   };
@@ -85,18 +86,17 @@
     this.checkBounds(index, 'set');
 
     this._buffer[this.relativeIndex(index)] = value;
-  
+
   };
 
-  Ring.prototype.concat = function(arr) {
+  Ring.prototype.concat = function (arr) {
 
     var alen = arr.length;
-    var blen = this._blockLength;
 
-    if (alen != blen) {
-      throw new ImproperBlockLength(blen, alen);
+    if (alen !== this._blockLength) {
+      throw new ImproperBlockLength(this._blockLength, alen);
     }
-  
+
     this._buffer.set(arr, this._start);
     this._start = (this._start + alen) % this.length;
 
@@ -104,10 +104,11 @@
 
   Ring.prototype.map = function (callback) {
 
-    var relativeIndex;
-    var value;
+    var relativeIndex
+      , value
+      , i;
 
-    for(var i = 0 ; i < this.length ; i++) {
+    for (i = 0; i < this.length; i += 1) {
       relativeIndex = this.relativeIndex(i);
       value = this._buffer[relativeIndex];
 
@@ -115,6 +116,6 @@
     }
   };
 
-  global['Ring'] = Ring;
+  global.Ring = Ring;
 
 }(window));
