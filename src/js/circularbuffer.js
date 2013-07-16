@@ -65,15 +65,6 @@
     return (this._start + index) % this.length;
   };
 
-  /* Should not be used when there is a set _blockLength */
-  Ring.prototype.push = function (element) {
-
-    this._buffer[this._start] = element;
-
-    var newStart = this._start + 1;
-    this._start = newStart > this._maxIndex ? 0 : newStart;
-  };
-
   Ring.prototype.get = function (index) {
 
     this.checkBounds(index, 'get');
@@ -91,15 +82,20 @@
 
   Ring.prototype.concat = function (arr) {
 
-    var alen = arr.length;
+    var alen = arr.length
+      , nlen = this._start + alen;
 
     if (alen !== this._blockLength) {
       throw new ImproperBlockLength(this._blockLength, alen);
     }
 
     this._buffer.set(arr, this._start);
-    this._start = (this._start + alen) % this.length;
 
+    if (this._start + alen >= this.length) {
+        this._start = 0;
+    } else {
+        this._start = nlen;
+    }
   };
 
   Ring.prototype.map = function (callback) {
