@@ -32,85 +32,119 @@
            "Valid block length    : " + this.ringBlockLength;
   };
 
-  function Ring(length, blockLength) {
-    this.length    = length;
-    this._maxIndex = this.length - 1;
-    this._start    = 0;
-    this._buffer   = new Float32Array(this.length);
+  function Ring(len, blockLen) {
+    
+    var length      = len
+      , maxIndex    = length - 1
+      , start       = 0
+      , buffer      = new Float32Array(length)
+      , blockLength = 0;
 
     /* blockLength should always be a factor of size.
      * An exception is thrown if it's not;
      */
-    this._blockLength = 0;
+    blockLength = 0;
 
-    if (blockLength) {
+    if (blockLen) {
 
-      if (length % blockLength !== 0) {
+      if (len % blockLen !== 0) {
         throw "Block length must be a factor of length.";
       }
 
-      this._blockLength = blockLength;
+      blockLength = blockLen;
 
     }
+
+    Object.defineProperties(this,{
+        "length" : {
+            value        : length
+          , enumerable   : true
+          , configurable : false
+          , writable     : false
+        }
+      , "blockLength" : {
+            value        : blockLength
+          , enumerable   : true
+          , configurable : false
+          , writable     : false
+      }
+    });
+
+    Object.defineProperties(Ring.prototype, {
+        "get" : {
+            value : function (index) {
+              checkBounds(index, maxIndex, 'get');
+
+              return buffer[relativeIndex(index, start, length)];
+            }
+          , enumerable   : true
+          , configurable : false
+          , writable     : false
+        }
+      , "set" : {
+           value : function (index, value) {
+
+             checkBounds(index, maxIndex, 'set');
+
+             buffer[relativeIndex(index, start, length)] = value;
+           }
+         , enumerable   : true
+         , configurable : false
+         , writable     : false
+        }
+      , "concat" : {
+            value : function (arr) {
+
+              var alen = arr.length
+                , nlen = start + alen;
+
+              if (alen !== blockLength) {
+                throw new ImproperBlockLength(blockLength, alen);
+              }
+
+              buffer.set(arr, start);
+
+              if (start + alen >= length) {
+                  start = 0;
+              } else {
+                  start = nlen;
+              }
+            }
+          , enumerable   : true
+          , configurable : false
+          , writable     : false
+        }
+      , "map" : {
+            value : function (callback) {
+
+              var relativeIndex
+                , value
+                , i;
+
+              for (i = 0; i < length; i += 1) {
+                relativeIndex = relativeIndex(i, start, length);
+                value = buffer[relativeIndex];
+
+                buffer[relativeIndex] = callback(value, i, length);
+              }
+            }
+          , enumerable   : true
+          , configurable : false
+          , writable     : false
+      }
+    });
   }
 
-  Ring.prototype.checkBounds = function (requested, callerName) {
+function checkBounds(requested, maxIndex, callerName) {
 
-    if (requested < 0 || requested > this._maxIndex) {
-      throw new IndexOutOfBounds(this._maxIndex, requested, callerName);
-    }
-  };
+  if (requested < 0 || requested > maxIndex) {
+    throw new IndexOutOfBounds(maxIndex, requested, callerName);
+  }
+}
 
-  Ring.prototype.relativeIndex = function (index) {
-    return (this._start + index) % this.length;
-  };
-
-  Ring.prototype.get = function (index) {
-
-    this.checkBounds(index, 'get');
-
-    return this._buffer[this.relativeIndex(index)];
-  };
-
-  Ring.prototype.set = function (index, value) {
-
-    this.checkBounds(index, 'set');
-
-    this._buffer[this.relativeIndex(index)] = value;
-
-  };
-
-  Ring.prototype.concat = function (arr) {
-
-    var alen = arr.length
-      , nlen = this._start + alen;
-
-    if (alen !== this._blockLength) {
-      throw new ImproperBlockLength(this._blockLength, alen);
-    }
-
-    this._buffer.set(arr, this._start);
-
-    if (this._start + alen >= this.length) {
-        this._start = 0;
-    } else {
-        this._start = nlen;
-    }
-  };
-
-  Ring.prototype.map = function (callback) {
-
-    var relativeIndex
-      , value
-      , i;
-
-    for (i = 0; i < this.length; i += 1) {
-      relativeIndex = this.relativeIndex(i);
-      value = this._buffer[relativeIndex];
-
-      this._buffer[relativeIndex] = callback(value, i, this.length);
-    }
-  };
+function relativeIndex(index, start, length) {
+  return (start + index) % length;
+}
 
   global.Ring = Ring;
 
