@@ -11,6 +11,14 @@
 
   "use strict";
 
+  function PropertyNotInitialized(propName) {
+    this.property = propName;
+  }
+
+  PropertyNotInitialized.prototype.toString = function () {
+        return "Property " + this.property + " not initialized.";
+  };
+
   var twoPI = 2 * Math.PI;
 
   function windowHann(i, length) {
@@ -52,6 +60,11 @@
             enumerable   : true
           , configurable : false
           , get : function () {
+
+              if (!_type) {
+                throw new PropertyNotInitialized("type");
+              }
+
               return _type;
           }
           , set : function (tp) {
@@ -65,6 +78,8 @@
                 for (i = 0; i < _length; i += 1) {
                   values[i] = windowFunction(i, _length);
                 }
+              } else {
+                throw new PropertyNotInitialized("length");
               }
           }
       }
@@ -72,6 +87,11 @@
             enumerable   : true
           , configurable : false
           , get : function () {
+
+              if (!_length) {
+                throw new PropertyNotInitialized("length");
+              }
+
               return _length;
             }
           , set : function (value) {
@@ -85,6 +105,8 @@
                 for (i = 0; i < _length; i += 1) {
                   values[i] = windowFunction(i, _length);
                 }
+              } else {
+                throw new PropertyNotInitialized("type");
               }
          }
       }
@@ -92,6 +114,10 @@
 
     Object.defineProperty(WindowFunction.prototype, "process", {
         value : function (buffer) {
+
+          if (!_length && !_type) {
+            throw new PropertyNotInitialized("length and type");
+          }
 
           if (buffer.length !== _length) {
             throw new TypeError("Given buffer is not the same length as" +
