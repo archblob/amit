@@ -14,7 +14,9 @@ LIBS = $(LIB_DIR)circularbuffer.js   \
 
 TUNER = $(TUNER_DIR)tuner.js
 
-VIEWS = $(VIEWS_DIR)views.js
+VIEWS = $(VIEWS_DIR)common.js \
+	$(VIEWS_DIR)simple.js       \
+	$(VIEWS_DIR)centsgauge.js   \
 
 tuner: $(LIBS) $(TUNER)
 	mkdir -p $(DIST_DIR)
