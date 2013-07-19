@@ -1,16 +1,7 @@
-/*
- * Copyright (c) 2013 Csernik Flaviu Andrei
- *
- * See the file LICENSE.txt for copying permission.
- * 
- */
-
-(function (global) {
+var FrequencyMap = (function () {
 
   /* 12-TET(12 Tone Equal Tempered scale */
   /* reference frequency default is A4 440 Hz*/
-
-  "use strict";
 
   var notesDiez  = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
     , notesBemol = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
@@ -140,6 +131,6 @@
     , writable     : false
   });
 
-  global.FrequencyMap = FrequencyMap;
+  return FrequencyMap;
 
-}(window));
+}());

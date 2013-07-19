@@ -1,28 +1,19 @@
+function HPS(spectrum, harmonics) {
 
-(function (global) {
+  var peek = 1
+    , i
+    , j
+    ;
 
-  "use strict";
-
-  function HPS(spectrum, harmonics) {
-
-    var peek = 1
-      , i
-      , j
-      ;
-
-    for (i = 1; i <= (spectrum.length/harmonics); i += 1) {
-      for (j = 1; j < harmonics; j += 1) {
-          spectrum[i] *= spectrum[i * j];
-      }
-
-      if (spectrum[i] > spectrum[peek]) {
-        peek = i;
-      }
+  for (i = 1; i <= (spectrum.length/harmonics); i += 1) {
+    for (j = 1; j < harmonics; j += 1) {
+        spectrum[i] *= spectrum[i * j];
     }
 
-    return peek;
-  };
+    if (spectrum[i] > spectrum[peek]) {
+      peek = i;
+    }
+  }
 
-  global.HPS = HPS;
-  
-}(window));
+  return peek;
+}

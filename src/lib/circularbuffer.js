@@ -1,13 +1,4 @@
-/*
- * Copyright (c) 2013 Csernik Flaviu Andrei
- *
- * See the file LICENSE.txt for copying permission.
- * 
- */
-
-(function (global) {
-
-  "use strict";
+var Ring = (function () {
 
   function IndexOutOfBounds(maxIndex, requestedIndex, method) {
     this.maxIndex       = maxIndex;
@@ -146,6 +137,6 @@ function relativeIndex(index, start, length) {
   return (start + index) % length;
 }
 
-  global.Ring = Ring;
+  return Ring;
 
-}(window));
+}());

@@ -8,7 +8,8 @@ DIST_DIR  = $(BUILD_DIR)dist/
 MINIFIER       = yui-compressor
 MINIFIER_FLAGS = --type js --preserve-semi --nomunge -o
 
-LIBS = $(LIB_DIR)circularbuffer.js   \
+LIBS = $(LIB_DIR)common.js      \
+	$(LIB_DIR)circularbuffer.js   \
 	$(LIB_DIR)frequencymap.js     \
 	$(LIB_DIR)windowfunctions.js  \
 	$(LIB_DIR)pitchdetection.js
@@ -21,7 +22,9 @@ VIEWS = $(VIEWS_DIR)common.js \
 
 tuner: $(LIBS) $(TUNER)
 	mkdir -p $(DIST_DIR)
-	cat $(LIBS) $(TUNER) > $(DIST_DIR)tuner.js
+	echo "(function (global) {\n" > $(DIST_DIR)tuner.js
+	awk 'FNR==1{print ""}1' $(LIBS) $(TUNER) >> $(DIST_DIR)tuner.js
+	echo "global.Tuner = Tuner;\n}(window));" >> $(DIST_DIR)tuner.js
 	$(MINIFIER) $(DIST_DIR)tuner.js $(MINIFIER_FLAGS) $(DIST_DIR)tuner-min.js
 
 views: $(VIEWS)

@@ -1,23 +1,4 @@
-/*
- * Copyright (c) 2013 Csernik Flaviu Andrei
- *
- * See the file LICENSE.txt for copying permission.
- * 
- */
-
-/*jslint browser: true, bitwise: true, es5: true, indent: 2 nomen: true*/
-
-(function (global) {
-
-  "use strict";
-
-  function PropertyNotInitialized(propName) {
-    this.property = propName;
-  }
-
-  PropertyNotInitialized.prototype.toString = function () {
-        return "Property " + this.property + " not initialized.";
-  };
+var WindowObject = (function () {
 
   var twoPI = 2 * Math.PI;
 
@@ -136,6 +117,6 @@
     });
   }
 
-  global.WindowObject = WindowFunction;
+  return WindowFunction;
 
-}(window));
+}());
