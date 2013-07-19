@@ -2,6 +2,10 @@ var Tuner = (function () {
 
   function Tuner(callback) {
 
+    if (!callback) {
+      throw new PropertyNotInitialized("Tuner", "callback");
+    }
+
     var context              = new AudioContext()
       , _samplerate          = 44100
       , _downsampleFactor    = 12
@@ -152,7 +156,6 @@ var Tuner = (function () {
         }
       , "run" : {
             value : function (stream) {
-              /* TODO check for view callback */
 
               var source    = context.createMediaStreamSource(stream)
                 , lowpass   = context.createBiquadFilter()

@@ -7,10 +7,11 @@
 
 "use strict";
 
-function PropertyNotInitialized(propName) {
+function PropertyNotInitialized(obj, propName) {
   this.property = propName;
+  this.obj      = obj;
 }
 
 PropertyNotInitialized.prototype.toString = function () {
-  return "Property " + this.property + " not initialized.";
+  return this.obj + " : " + this.property + " not initialized.";
 };

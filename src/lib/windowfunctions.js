@@ -43,7 +43,7 @@ var WindowObject = (function () {
           , get : function () {
 
               if (!_type) {
-                throw new PropertyNotInitialized("type");
+                throw new PropertyNotInitialized("WindowFunction", "type");
               }
 
               return _type;
@@ -60,7 +60,7 @@ var WindowObject = (function () {
                   values[i] = windowFunction(i, _length);
                 }
               } else {
-                throw new PropertyNotInitialized("length");
+                throw new PropertyNotInitialized("WindowFunction", "length");
               }
           }
       }
@@ -70,7 +70,7 @@ var WindowObject = (function () {
           , get : function () {
 
               if (!_length) {
-                throw new PropertyNotInitialized("length");
+                throw new PropertyNotInitialized("WindowFunction", "length");
               }
 
               return _length;
@@ -87,7 +87,7 @@ var WindowObject = (function () {
                   values[i] = windowFunction(i, _length);
                 }
               } else {
-                throw new PropertyNotInitialized("type");
+                throw new PropertyNotInitialized("WindowFunction", "type");
               }
          }
       }
@@ -96,8 +96,12 @@ var WindowObject = (function () {
     Object.defineProperty(WindowFunction.prototype, "process", {
         value : function (buffer) {
 
-          if (!_length && !_type) {
-            throw new PropertyNotInitialized("length and type");
+          if (!_length) {
+            throw new PropertyNotInitialized("WindowFunction", "length");
+          }
+
+          if (!_type) {
+            throw new PropertyNotInitialized("WindowFunction", "type");
           }
 
           if (buffer.length !== _length) {
