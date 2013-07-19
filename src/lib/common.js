@@ -22,8 +22,8 @@ function isInteger(n) {
 
 function checkNat(callerName, n) {
 
-  if(isInteger) {
-    if(value <= 0) {
+  if (isInteger) {
+    if (value <= 0) {
       throw new RangeError("downsampleFactor must be a positive." +
                            "given number is not: " + value);
     }
