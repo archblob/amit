@@ -125,8 +125,13 @@ var Tuner = (function () {
               return _frequencyMap;
             }
           , set : function (freqMap) {
-              /* TODO check if it is really a FrequencyMap type */
-              _frequencyMap   = freqMap;
+              
+              if (freqMap.hasOwnProperty("closestNote")) {
+                _frequencyMap   = freqMap;
+              } else {
+                throw new TypeError("Passed object has to have a " +
+                                    "a method named closestNote");
+              }
             }
         }
       , "harmonics" : {

@@ -39,7 +39,9 @@ var FrequencyMap = (function () {
               return _A4;
           }
           , set : function (value) {
-            /* TODO check that values is and integer */
+
+              checkNat("A4", value);
+
               _A4 = value;
 
               _frequencyMap = populateFrequencyMap(_A4, _length);
