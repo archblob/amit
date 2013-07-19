@@ -26,8 +26,10 @@ tuner: $(LIBS) $(TUNER)
 	awk 'FNR==1{print ""}1' $(LIBS) $(TUNER) >> $(DIST_DIR)tuner.js
 	echo "global.Tuner = Tuner;\n}(window));" >> $(DIST_DIR)tuner.js
 	$(MINIFIER) $(DIST_DIR)tuner.js $(MINIFIER_FLAGS) $(DIST_DIR)tuner-min.js
+	gzip --best -c $(DIST_DIR)tuner-min.js > $(DIST_DIR)tuner-min.js.gz
 
 views: $(VIEWS)
 	mkdir -p $(DIST_DIR)
 	cat $(VIEWS) > $(DIST_DIR)views.js
 	$(MINIFIER) $(DIST_DIR)views.js $(MINIFIER_FLAGS) $(DIST_DIR)views-min.js
+	gzip --best -c $(DIST_DIR)views-min.js > $(DIST_DIR)views-min.js.gz
