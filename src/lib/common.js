@@ -15,3 +15,21 @@ function PropertyNotInitialized(obj, propName) {
 PropertyNotInitialized.prototype.toString = function () {
   return this.obj + " : " + this.property + " not initialized.";
 };
+
+function isInteger(n) {
+   return typeof n === "number" && Math.floor(n) == n;
+}
+
+function checkNat(callerName, n) {
+
+  if(isInteger) {
+    if(value <= 0) {
+      throw new RangeError("downsampleFactor must be a positive." +
+                           "given number is not: " + value);
+    }
+  } else {
+    throw new TypeError("downsampleFactor accepts an integer but" +
+                        "given type is " + typeof value);
+  }
+
+}

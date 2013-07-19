@@ -58,6 +58,8 @@ var Tuner = (function () {
             }
           , set : function (value) {
 
+              checkNat("downsampleFactor",value);
+
               _downsampleFactor = Math.floor(value);
 
               _effectiveSamplerate = _samplerate / _downsampleFactor;
@@ -81,7 +83,6 @@ var Tuner = (function () {
               return _fftSize;
             }
           , set : function (value) {
-              /* TODO : check to see if it is valid fft size */
               _fftSize = value;
 
               _frequencyResolution = _effectiveSamplerate / _fftSize;
@@ -89,6 +90,7 @@ var Tuner = (function () {
               _temporalWindow   = _bufferSize / _samplerate;
               _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
 
+              /* this will throw en exception if the fft size is not valid */
               fft     = new FFT(_fftSize, _effectiveSamplerate);
               samples = new Ring(_bufferSize, 512);
 
@@ -135,7 +137,8 @@ var Tuner = (function () {
             }
           , set : function (value) {
 
-            /* TODO test if grater that zero and is integer */
+              checkNat("downsampleFactor",value);
+
               _harmonics        = value;
               _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
 
