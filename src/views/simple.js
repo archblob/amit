@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2013 Csernik Flaviu Andrei
- *
- * See the file LICENSE.txt for copying permission.
- * 
- */
-
 var SimpleView = (function () {
 
   function SimpleView() {
