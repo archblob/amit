@@ -15,6 +15,7 @@ var Tuner = (function () {
       , _bufferSize          = _fftSize * _downsampleFactor
       , _temporalWindow      = _bufferSize / _samplerate
       , _harmonics           = 5
+      , _maxHarmFrequency    = _fftSize / _harmonics * _frequencyResolution
       , fft                  = new FFT(_fftSize, _effectiveSamplerate)
       , samples              = new Ring(_bufferSize, 512)
       , _windowFunction      = new WindowObject()
@@ -61,8 +62,9 @@ var Tuner = (function () {
 
               _effectiveSamplerate = _samplerate / _downsampleFactor;
               _frequencyResolution = _effectiveSamplerate / _fftSize;
-              _bufferSize          = _fftSize * _downsampleFactor;
-              _temporalWindow      = _bufferSize / _samplerate;
+              _bufferSize       = _fftSize * _downsampleFactor;
+              _temporalWindow   = _bufferSize / _samplerate;
+              _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
 
               fft     = new FFT(_fftSize, _effectiveSamplerate);
               samples = new Ring(_bufferSize, 512);
@@ -83,8 +85,9 @@ var Tuner = (function () {
               _fftSize = value;
 
               _frequencyResolution = _effectiveSamplerate / _fftSize;
-              _bufferSize          = _fftSize * _downsampleFactor;
-              _temporalWindow      = _bufferSize / _samplerate;
+              _bufferSize       = _fftSize * _downsampleFactor;
+              _temporalWindow   = _bufferSize / _samplerate;
+              _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
 
               fft     = new FFT(_fftSize, _effectiveSamplerate);
               samples = new Ring(_bufferSize, 512);
@@ -131,10 +134,20 @@ var Tuner = (function () {
               return _harmonics;
             }
           , set : function (value) {
-              /* TODO check if it is a valid number */
-              _harmonics   = value;
+
+            /* TODO test if grater that zero and is integer */
+              _harmonics        = value;
+              _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
+
             }
         }
+      , "maxDetectableFundamental" : {
+            enumerable   : true
+          , configurable : false
+          , get : function () {
+              return _maxHarmFrequency;
+          }
+      }
     });
 
     Object.defineProperties(Tuner.prototype, {
