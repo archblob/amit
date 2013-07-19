@@ -22,8 +22,19 @@ var Tuner = (function () {
       , _viewCallback        = callback
       ;
 
-      _windowFunction.type   = "Hann";
-      _windowFunction.length = _bufferSize;
+    _windowFunction.type   = "Hann";
+    _windowFunction.length = _bufferSize;
+
+    var source    = context.createMediaStreamSource(stream)
+      , lowpass   = context.createBiquadFilter()
+      , highpass  = context.createBiquadFilter()
+      , processor = context.createScriptProcessor(512,1,1)
+      ;
+
+    lowpass.type       = "lowpass";
+    highpass.type      = "highpass";
+    lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
+    highpass.frequency = 35;
 
     Object.defineProperties(this, {
         "samplerate" : {
@@ -55,6 +66,8 @@ var Tuner = (function () {
 
               fft     = new FFT(_fftSize, _effectiveSamplerate);
               samples = new Ring(_bufferSize, 512);
+
+              lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
 
               _windowFunction.length = _bufferSize;
             }
@@ -156,17 +169,6 @@ var Tuner = (function () {
         }
       , "run" : {
             value : function (stream) {
-
-              var source    = context.createMediaStreamSource(stream)
-                , lowpass   = context.createBiquadFilter()
-                , highpass  = context.createBiquadFilter()
-                , processor = context.createScriptProcessor(512,1,1)
-                ;
-
-              lowpass.type       = "lowpass";
-              highpass.type      = "highpass";
-              lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
-              highpass.frequency = 35;
 
               processor.onaudioprocess = function (event) {
                 var input = event.inputBuffer.getChannelData(0);
