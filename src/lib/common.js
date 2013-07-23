@@ -7,6 +7,8 @@
 
 "use strict";
 
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
 function PropertyNotInitialized(obj, propName) {
   this.property = propName;
   this.obj      = obj;
