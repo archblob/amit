@@ -1,6 +1,6 @@
 var Tuner = (function () {
 
-  function Tuner(callback) {
+  function Tuner(callback, stream) {
 
     if (!callback) {
       throw new PropertyNotInitialized("Tuner", "callback");
