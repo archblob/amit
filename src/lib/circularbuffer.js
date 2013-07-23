@@ -108,15 +108,15 @@ var Ring = (function () {
       , "map" : {
             value : function (callback) {
 
-              var relativeIndex
+              var relIndex
                 , value
                 , i;
 
               for (i = 0; i < length; i += 1) {
-                relativeIndex = relativeIndex(i, start, length);
-                value = buffer[relativeIndex];
+                relIndex = relativeIndex(i, start, length);
+                value = buffer[relIndex];
 
-                buffer[relativeIndex] = callback(value, i, length);
+                buffer[relIndex] = callback(value, i, length);
               }
             }
           , enumerable   : true
