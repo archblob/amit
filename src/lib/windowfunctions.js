@@ -28,13 +28,18 @@ var WindowObject = (function () {
     }
   }
 
-  function WindowFunction() {
+  function WindowFunction(tp, len) {
 
-    var _type
-      , _length
-      , values
-      , windowFunction
+    var _type          = tp
+      , _length        = len
+      , values         = new Float32Array(_length)
+      , windowFunction = selectWindowFunctionType(_type)
+      , i
       ;
+
+    for (i = 0; i < _length; i += 1) {
+      values[i] = windowFunction(i, _length);
+    }
 
     Object.defineProperties(this, {
         "type" : {

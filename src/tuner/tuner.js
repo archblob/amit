@@ -18,13 +18,10 @@ var Tuner = (function () {
       , _maxHarmFrequency    = _fftSize / _harmonics * _frequencyResolution
       , fft                  = new FFT(_fftSize, _effectiveSamplerate)
       , samples              = new Ring(_bufferSize, 512)
-      , _windowFunction      = new WindowObject()
+      , _windowFunction      = new WindowObject("Hann", _bufferSize)
       , _frequencyMap        = new FrequencyMap()
       , _viewCallback        = callback
       ;
-
-    _windowFunction.type   = "Hann";
-    _windowFunction.length = _bufferSize;
 
     var source    = context.createMediaStreamSource(stream)
       , lowpass   = context.createBiquadFilter()
