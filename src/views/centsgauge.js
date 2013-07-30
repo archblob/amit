@@ -1,4 +1,4 @@
-var CentsView = (function () {
+var CentsView = (function (containerID) {
 
   function CentsView() {
 
@@ -83,6 +83,12 @@ var CentsView = (function () {
 
   };
 
-  return CentsView;
+  if (!this.instance) {
+    this.instance = new CentsView(containerID);
+  } else {
+    console.log("An instance of CentsGauge already exists.");
+  }
 
-}());
+  return this.instance;
+
+});
