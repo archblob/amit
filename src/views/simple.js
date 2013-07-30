@@ -1,4 +1,4 @@
-var SimpleView = (function () {
+var SimpleView = (function (containerID) {
 
   function SimpleView() {
 
@@ -174,6 +174,12 @@ var SimpleView = (function () {
     });
   }
 
-  return SimpleView;
+  if (!this.instance) {
+    this.instance = new SimpleView(containerID);
+  } else {
+    console.log("An instance of SimpleView already exists.");
+  }
 
-}());
+  return this.instance;
+
+});
