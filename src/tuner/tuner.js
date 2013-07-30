@@ -1,4 +1,4 @@
-var Tuner = (function () {
+var Tuner = (function (clbk, strm) {
 
   function Tuner(callback, stream) {
 
@@ -87,7 +87,7 @@ var Tuner = (function () {
               _temporalWindow   = _bufferSize / _samplerate;
               _maxHarmFrequency = _fftSize / _harmonics * _frequencyResolution;
 
-              /* this will throw en exception if the fft size is not valid */
+              /* this will throw an exception if the fft size is not valid */
               fft     = new FFT(_fftSize, _effectiveSamplerate);
               samples = new Ring(_bufferSize, 512);
 
@@ -186,7 +186,7 @@ var Tuner = (function () {
           , writable     : false
         }
       , "run" : {
-            value : function (stream) {
+            value : function () {
 
               processor.onaudioprocess = function (event) {
                 var input = event.inputBuffer.getChannelData(0);
@@ -213,6 +213,11 @@ var Tuner = (function () {
 
   }
 
-  return Tuner;
+  if (!this.instance) {
+    this.instance = new Tuner(clbk, strm);
+  } else {
+    console.log("An instance of Tuner already exists.");
+  }
 
-}());
+  return this.instance;
+});
