@@ -1,10 +1,16 @@
-var Tuner = (function (clbk, strm) {
+var Tuner = (function () {
 
   function Tuner(callback, stream) {
+
+    if (Tuner.prototype._instance) {
+      return Tuner.prototype._instance;
+    }
 
     if (!callback) {
       throw new PropertyNotInitialized("Tuner", "callback");
     }
+
+    Tuner.prototype._instance = this;
 
     var context              = new AudioContext()
       , _samplerate          = 44100
@@ -213,11 +219,5 @@ var Tuner = (function (clbk, strm) {
 
   }
 
-  if (!this.instance) {
-    this.instance = new Tuner(clbk, strm);
-  } else {
-    console.log("An instance of Tuner already exists.");
-  }
-
-  return this.instance;
-});
+  return Tuner;
+}());
