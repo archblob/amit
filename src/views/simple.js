@@ -93,11 +93,15 @@ var SimpleView = (function (containerID) {
      "drawNoteName" : {
        value        : function () {
 
+         this.ctx.save();
+
          this.ctx.textAlign    = 'left';
          this.ctx.textBaseline = 'middle';
          this.ctx.font         = this.noteFont;
 
          this.ctx.fillText(this.peek.note.name, xpad, cy, noteFontMaxWidth);
+
+         this.ctx.restore();
        },
        enumerable   : false,
        configurable : false,
@@ -108,6 +112,8 @@ var SimpleView = (function (containerID) {
 
          var cents = Math.abs(this.peek.cents);
 
+         this.ctx.save();
+
          this.ctx.fillStyle = cents - 5 <= 5 ? this.tunedColor : this.notTunedColor; 
 
          this.ctx.textAlign    = 'center';
@@ -116,7 +122,7 @@ var SimpleView = (function (containerID) {
 
          this.ctx.fillText(this.peek.frequency.toFixed(2), x, cy);
 
-         this.ctx.fillStyle = black;
+         this.ctx.restore();
        },
        enumerable   : false,
        configurable : false,
