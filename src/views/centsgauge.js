@@ -1,90 +1,169 @@
-var CentsView = (function (containerID) {
+var CentsGauge = (function (containerID) {
 
-  function CentsView() {
+  function CentsGauge() {
 
     ViewContextAndStyle.apply(this,arguments);
 
+    var _width  = 400
+      , _height = 200
+      ;
+    
     this.cvs.width  = 400;
     this.cvs.height = 200;
 
-    this.centerX       = this.cvs.width / 2;
-    this.centerY       = this.cvs.height;
-    this.circumference = 1000;
-    this.radius        = this.circumference / (2*Math.PI);
-    this.quadrantArc   = this.circumference / 4;
+    var centerX       = this.cvs.width / 2
+      , centerY       = this.cvs.height
+      , radius        = 160
+      , circumference = 2 * Math.PI * radius
+      , quadrantArc   = circumference / 4
+      , dotRadius     = 3
+      , zeroDotRadius = 5
+      , markStep      = 50
+      ;
 
-    this.needleColor   = "rgb(58,58,58)";
-    this.dotColor      = "rgb(58,58,58)";
-    this.dotRadius     = 3;
-    this.zeroDotColor  = "rgb(44,114,158)";
-    this.zeroDotRadius = 5;
-    this.markStep      = 50;
-  };
+    Object.defineProperties(this, {
+        "width" : {
+          enumerable   : true
+        , configurable : false
+        , get : function () {
+            return _width;
+          }
+        , set : function (val) {
+            _width = val;
 
-  CentsView.prototype.background = function() {
+            this.cvs.width = _width;
+            centerX  = this.cvs.width / 2;
 
-    this.ctx.beginPath();
-    this.ctx.arc(this.centerX,this.centerY,10,0,Math.PI,true);
-    this.ctx.fillStyle = this.needleColor;
-    this.ctx.fill();
+          }
+        }
+      , "height" : {
+          enumerable   : true
+        , configurable : false
+        , get : function () {
+            return _height;
+          }
+        , set : function (val) {
+            _height = val;
 
-    for(var arc=0; arc <= this.circumference / 2; arc+= this.markStep){
-      var markRadius = this.dotRadius;
-      var fillStyle  = this.dotColor;
+            this.cvs.height = _height;
+            centerY   = this.cvs.height;
+          }
+        }
+      , "dotRadius" : {
+           value        : dotRadius
+         , configurable : false
+         , enumerable   : true
+         , writable     : true
+        }
+      , "zeroDotRadius" : {
+           value        : zeroDotRadius
+         , configurable : false
+         , enumerable   : true
+         , writable     : true
+        }
+      , "markStep" : {
+          value        : markStep
+        , configurable : false
+        , enumerable   : true
+        , writable     : true
+        }
+      , "radius" : {
+          enumerable   : true
+        , configurable : false
+        , get          : function () {
+            return radius;
+          }
+        , set : function (r) {
+            radius = r;
 
-      this.ctx.beginPath();
-      var alfa = arc / this.radius;
-
-      if (arc == this.quadrantArc){
-        markRadius = this.zeroDotRadius;
-        fillStyle  = this.zeroDotColor;
+            circumference = 2 * Math.PI * radius;
+            quadrantArc   = circumference / 4;
+        }
       }
+    });
 
-      var x = this.centerX - this.radius * Math.cos(alfa);
-      var y = this.centerY - this.radius * Math.sin(alfa);
+    Object.defineProperties(CentsGauge.prototype, {
+        "background" : {
+          value : function() {
 
-      this.ctx.arc(x,y,markRadius,0,2*Math.PI,true);
-      this.ctx.fillStyle = fillStyle;
-      this.ctx.fill();
-    }
-  };
+            var arc;
 
-  CentsView.prototype.run = function() {
+            this.ctx.beginPath();
+            this.ctx.arc(centerX,centerY,10,0,Math.PI,true);
+            this.ctx.fillStyle = this.color;
+            this.ctx.fill();
 
-    var arc  = this.quadrantArc - this.peek.cents;
-    var alfa = arc / this.radius;
+            for (arc = 0; arc <= circumference / 2; arc += markStep) {
+              var markRadius = dotRadius;
+              var fillStyle  = this.color;
 
-    var x = this.centerX + this.radius * Math.cos(alfa);
-    var y = this.centerY - this.radius * Math.sin(alfa);
+              this.ctx.beginPath();
+              var alfa = arc / radius;
 
-    this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height);
+              if (arc == quadrantArc){
+                markRadius = zeroDotRadius;
+              }
 
-    this.background();
+              var x = centerX - radius * Math.cos(alfa);
+              var y = centerY - radius * Math.sin(alfa);
 
-    this.ctx.font      = this.noteFont;
-    this.ctx.fillStyle = this.color;
-    this.ctx.fillText(this.peek.note.name,20,50);
+              this.ctx.arc(x,y,markRadius,0,2*Math.PI,true);
+              this.ctx.fillStyle = fillStyle;
+              this.ctx.fill();
+            }
+          }
+        , enumerable   : false
+        , configurable : false
+        , writable     : false
+        }
+      , "run" : {
+          value : function() {
 
-    this.ctx.font = this.freqFont;
-    this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.cvs.width-110,40);
+            var arc  = quadrantArc - this.peek.cents
+              , alfa = arc / radius
+              , x = centerX + radius * Math.cos(alfa)
+              , y = centerY - radius * Math.sin(alfa)
+              ;
 
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.centerX,this.centerY);
-    this.ctx.lineTo(x,y);
-    this.ctx.strokeStyle = this.needleColor;
-    this.ctx.stroke();
+            this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height);
 
-    window.requestAnimationFrame(this.run.bind(this));
-  };
+            this.background();
 
-  CentsView.prototype.update = function (element) {
+            this.ctx.font      = this.noteFont;
+            this.ctx.fillStyle = this.color;
+            this.ctx.fillText(this.peek.note.name,20,50);
 
-    this.peek = element.peek;
+            this.ctx.font = this.freqFont;
+            this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.cvs.width-110,40);
 
+            this.ctx.beginPath();
+            this.ctx.moveTo(centerX,centerY);
+            this.ctx.lineTo(x,y);
+            this.ctx.strokeStyle = this.color;
+            this.ctx.stroke();
+
+            window.requestAnimationFrame(this.run.bind(this));
+          }
+        , enumerable   : false
+        , configurable : false
+        , writable     : false
+        }
+      , "update" : {
+          value : function (element) {
+
+            this.peek = element.peek;
+
+          }
+        , enumerable   : false
+        , configurable : false
+        , writable     : false
+        }
+      }
+    );
   };
 
   if (!this.instance) {
-    this.instance = new CentsView(containerID);
+    this.instance = new CentsGauge(containerID);
   } else {
     console.log("An instance of CentsGauge already exists.");
   }
