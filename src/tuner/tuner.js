@@ -1,6 +1,6 @@
 var Tuner = (function () {
 
-  function Tuner(callback, stream) {
+  function Tuner(callback) {
 
     if (Tuner.prototype._instance) {
       return Tuner.prototype._instance;
@@ -29,18 +29,28 @@ var Tuner = (function () {
       , _viewCallback        = callback
       ;
 
-    var source    = context.createMediaStreamSource(stream)
-      , lowpass   = context.createBiquadFilter()
-      , highpass  = context.createBiquadFilter()
-      , processor = context.createScriptProcessor(512,1,1)
+    var source
+      , lowpass
+      , highpass
+      , processor
       ;
 
-    lowpass.type       = "lowpass";
-    highpass.type      = "highpass";
-    lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
-    highpass.frequency = 35;
-
     Object.defineProperties(this, {
+        "setAudioStream": {
+            enumebrable  : false
+          , configurable : false
+          , set: function (stream) {
+              source    = context.createMediaStreamSource(stream);
+              lowpass   = context.createBiquadFilter();
+              highpass  = context.createBiquadFilter();
+              processor = context.createScriptProcessor(512,1,1);
+
+              lowpass.type       = "lowpass";
+              highpass.type      = "highpass";
+              lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
+              highpass.frequency = 35;
+          }
+        },
         "samplerate" : {
             value        : _samplerate
           , enumerable   : true
@@ -193,6 +203,10 @@ var Tuner = (function () {
         }
       , "run" : {
             value : function () {
+
+              if (!source) {
+                throw new ReferenceError("The audio stream is not set.");
+              }
 
               processor.onaudioprocess = function (event) {
                 var input = event.inputBuffer.getChannelData(0);
