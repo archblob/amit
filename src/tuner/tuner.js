@@ -49,7 +49,7 @@ var Tuner = (function () {
         }
       , "viewCallback" : {
             value        : _viewCallback
-          , enumerable   : true
+          , enumerable   : false
           , configurable : false
           , writable     : true
         }
@@ -122,7 +122,7 @@ var Tuner = (function () {
             }
         }
       , "frequencyMap" : {
-            enumerable   : true
+            enumerable   : false
           , configurable : false
           , get : function () {
               return _frequencyMap;
