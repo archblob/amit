@@ -6,10 +6,6 @@ var Tuner = (function () {
       return Tuner.prototype._instance;
     }
 
-    if (!callback) {
-      throw new PropertyNotInitialized("Tuner", "callback");
-    }
-
     Tuner.prototype._instance = this;
 
     var context              = new AudioContext()
@@ -26,7 +22,7 @@ var Tuner = (function () {
       , samples              = new Ring(_bufferSize, 512)
       , _windowFunction      = new WindowObject("Hann", _bufferSize)
       , _frequencyMap        = new FrequencyMap()
-      , _viewCallback        = callback
+      , _viewCallback
       ;
 
     var source
@@ -58,10 +54,11 @@ var Tuner = (function () {
           , writable     : false
         }
       , "viewCallback" : {
-            value        : _viewCallback
-          , enumerable   : false
+            enumerable   : false
           , configurable : false
-          , writable     : true
+          , set : function (clbk) {
+            _viewCallback = clbk;
+          }
         }
       , "downsampleFactor" : {
             enumerable   : true
@@ -206,6 +203,10 @@ var Tuner = (function () {
 
               if (!source) {
                 throw new ReferenceError("The audio stream is not set.");
+              }
+
+              if (!_viewCallback) {
+                throw new PropertyNotInitialized("Tuner", "callback");
               }
 
               processor.onaudioprocess = function (event) {
