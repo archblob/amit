@@ -93,7 +93,6 @@ var FrequencyMap = (function () {
 
         var succ  = mid + 1
           , pred  = mid - 1
-          , cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2))
           , midDiff   = Math.abs(freq - midFreq)
           , succFreq  = 0
           , succDiff  = 0
@@ -118,6 +117,8 @@ var FrequencyMap = (function () {
         } else {
           closestNote = this.frequencyMap[mid];
         }
+
+        var cents = 1200 * (Math.log(freq / closestNote.frequency) / Math.log(2));
 
         var note = {
             "note"      : closestNote
