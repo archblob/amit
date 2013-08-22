@@ -34,7 +34,6 @@ var CentsGauge = (function (containerID) {
 
             this.cvs.width = _width;
             centerX  = this.cvs.width / 2;
-
           }
         }
       , "height" : {
@@ -47,7 +46,7 @@ var CentsGauge = (function (containerID) {
             _height = val;
 
             this.cvs.height = _height;
-            centerY   = this.cvs.height;
+            centerY         = this.cvs.height;
           }
         }
       , "dotRadius" : {
@@ -90,6 +89,7 @@ var CentsGauge = (function (containerID) {
             var arc = quadrantArc - markStep
               , alfa
               , x
+              , xc
               , xs
               , y
               ;
@@ -103,9 +103,10 @@ var CentsGauge = (function (containerID) {
             while (arc > 0) {
 
               alfa = arc / radius;
+              xc   = radius * Math.cos(alfa);
 
-              x  = centerX - radius * Math.cos(alfa);
-              xs = centerX + radius * Math.cos(alfa);
+              x  = centerX - xc;
+              xs = centerX + xc;
               y  = centerY - radius * Math.sin(alfa);
 
               this.ctx.beginPath();
@@ -138,6 +139,7 @@ var CentsGauge = (function (containerID) {
 
             this.ctx.font      = this.noteFont;
             this.ctx.fillStyle = this.color;
+
             this.ctx.fillText(this.peek.note.name,20,50);
 
             this.ctx.font = this.freqFont;
