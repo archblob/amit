@@ -87,7 +87,7 @@ var CentsGauge = (function (containerID) {
         "background" : {
           value : function() {
 
-            var arc
+            var arc = quadrantArc - markStep
               , alfa
               , x
               , xs
@@ -100,7 +100,7 @@ var CentsGauge = (function (containerID) {
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
 
-            for (arc = quadrantArc - markStep ; arc > 0 ; arc -= markStep) {
+            while (arc > 0) {
 
               alfa = arc / radius;
 
@@ -115,6 +115,8 @@ var CentsGauge = (function (containerID) {
               this.ctx.fillStyle = this.color;
 
               this.ctx.fill();
+
+              arc -= markStep;
             }
           }
         , enumerable   : false
