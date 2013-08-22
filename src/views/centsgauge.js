@@ -86,29 +86,33 @@ var CentsGauge = (function (containerID) {
         "background" : {
           value : function() {
 
-            var arc;
+            var arc
+              , alfa
+              , x
+              , xs
+              , y
+              ;
 
             this.ctx.beginPath();
-            this.ctx.arc(centerX,centerY,10,0,Math.PI,true);
+            this.ctx.arc(centerX,centerY,10,0,2*Math.PI,false);
+            this.ctx.arc(centerX,centerY - radius,zeroDotRadius,0,2*Math.PI,true);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
 
-            for (arc = 0; arc <= circumference / 2; arc += markStep) {
-              var markRadius = dotRadius;
-              var fillStyle  = this.color;
+            for (arc = quadrantArc - markStep ; arc > 0 ; arc -= markStep) {
+
+              alfa = arc / radius;
+
+              x  = centerX - radius * Math.cos(alfa);
+              xs = centerX + radius * Math.cos(alfa);
+              y  = centerY - radius * Math.sin(alfa);
 
               this.ctx.beginPath();
-              var alfa = arc / radius;
 
-              if (arc == quadrantArc){
-                markRadius = zeroDotRadius;
-              }
+              this.ctx.arc(x,y,dotRadius,0,2*Math.PI,true);
+              this.ctx.arc(xs,y,dotRadius,0,2*Math.PI,true);
+              this.ctx.fillStyle = this.color;
 
-              var x = centerX - radius * Math.cos(alfa);
-              var y = centerY - radius * Math.sin(alfa);
-
-              this.ctx.arc(x,y,markRadius,0,2*Math.PI,true);
-              this.ctx.fillStyle = fillStyle;
               this.ctx.fill();
             }
           }
