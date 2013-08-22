@@ -6,6 +6,7 @@ var CentsGauge = (function (containerID) {
 
     var _width  = 400
       , _height = 200
+      , twoPI   = 2 * Math.PI
       ;
     
     this.cvs.width  = 400;
@@ -14,7 +15,7 @@ var CentsGauge = (function (containerID) {
     var centerX       = this.cvs.width / 2
       , centerY       = this.cvs.height
       , radius        = 160
-      , circumference = 2 * Math.PI * radius
+      , circumference = twoPI * radius
       , quadrantArc   = circumference / 4
       , dotRadius     = 3
       , zeroDotRadius = 5
@@ -76,7 +77,7 @@ var CentsGauge = (function (containerID) {
         , set : function (r) {
             radius = r;
 
-            circumference = 2 * Math.PI * radius;
+            circumference = twoPI * radius;
             quadrantArc   = circumference / 4;
         }
       }
@@ -94,8 +95,8 @@ var CentsGauge = (function (containerID) {
               ;
 
             this.ctx.beginPath();
-            this.ctx.arc(centerX,centerY,10,0,2*Math.PI,false);
-            this.ctx.arc(centerX,centerY - radius,zeroDotRadius,0,2*Math.PI,true);
+            this.ctx.arc(centerX,centerY,10,0,twoPI,false);
+            this.ctx.arc(centerX,centerY - radius,zeroDotRadius,0,twoPI,true);
             this.ctx.fillStyle = this.color;
             this.ctx.fill();
 
@@ -109,8 +110,8 @@ var CentsGauge = (function (containerID) {
 
               this.ctx.beginPath();
 
-              this.ctx.arc(x,y,dotRadius,0,2*Math.PI,true);
-              this.ctx.arc(xs,y,dotRadius,0,2*Math.PI,true);
+              this.ctx.arc(x,y,dotRadius,0,twoPI,true);
+              this.ctx.arc(xs,y,dotRadius,0,twoPI,true);
               this.ctx.fillStyle = this.color;
 
               this.ctx.fill();
