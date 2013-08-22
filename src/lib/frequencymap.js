@@ -3,9 +3,8 @@ var FrequencyMap = (function () {
   /* 12-TET(12 Tone Equal Tempered scale */
   /* reference frequency default is A4 440 Hz*/
 
-  var notesDiez  = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
-    , notesBemol = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
-    , trtwo      = Math.pow(2, 1 / 12)
+  var notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
+    , trtwo = Math.pow(2, 1 / 12)
     ;
 
   function populateFrequencyMap(reference, length) {
