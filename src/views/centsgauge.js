@@ -9,8 +9,8 @@ var CentsGauge = (function (containerID) {
       , twoPI   = 2 * Math.PI
       ;
 
-    this.cvs.width  = 400;
-    this.cvs.height = 200;
+    this.cvs.width  = _width;
+    this.cvs.height = _height;
 
     this.cvs.style.position = "absolute";
     this.cvs.style.zIndex = 1;
