@@ -8,9 +8,12 @@ var CentsGauge = (function (containerID) {
       , _height = 200
       , twoPI   = 2 * Math.PI
       ;
-    
+
     this.cvs.width  = 400;
     this.cvs.height = 200;
+
+    this.cvs.style.position = "absolute";
+    this.cvs.style.zIndex = 1;
 
     var centerX       = this.cvs.width / 2
       , centerY       = this.cvs.height
@@ -20,7 +23,19 @@ var CentsGauge = (function (containerID) {
       , dotRadius     = 3
       , zeroDotRadius = 5
       , markStep      = 50
+      , _bgCVS        = document.createElement("canvas")
+      , _bgCTX        = _bgCVS.getContext("2d")
       ;
+
+      _bgCVS.id = "gtunerViewBg";
+
+      document.getElementById(containerID).appendChild(_bgCVS);
+
+      _bgCVS.width  = _width;
+      _bgCVS.height = _height;
+
+      _bgCVS.style.position = "absolute";
+      _bgCVS.style.zIndex   = 0;
 
     Object.defineProperties(this, {
         "width" : {
@@ -34,6 +49,8 @@ var CentsGauge = (function (containerID) {
 
             this.cvs.width = _width;
             centerX  = this.cvs.width / 2;
+
+            this.background();
           }
         }
       , "height" : {
@@ -47,25 +64,45 @@ var CentsGauge = (function (containerID) {
 
             this.cvs.height = _height;
             centerY         = this.cvs.height;
+
+            this.background();
           }
         }
       , "dotRadius" : {
-           value        : dotRadius
-         , configurable : false
+           configurable : false
          , enumerable   : true
-         , writable     : true
+         , get : function () {
+             return dotRadius;
+           }
+         , set : function (val) {
+             dotRadius = val;
+
+             this.background();
+           }
         }
       , "zeroDotRadius" : {
-           value        : zeroDotRadius
-         , configurable : false
+           configurable : false
          , enumerable   : true
-         , writable     : true
+         , get : function () {
+             return zeroDotRadius;
+         }
+         , set : function (val) {
+             zeroDotRadius = val;
+
+             this.background();
+           }
         }
       , "markStep" : {
-          value        : markStep
-        , configurable : false
+          configurable : false
         , enumerable   : true
-        , writable     : true
+        , get : function () {
+            return markStep;
+          }
+        , set : function (val) {
+            markStep = val;
+
+            this.background();
+          }
         }
       , "radius" : {
           enumerable   : true
@@ -78,6 +115,8 @@ var CentsGauge = (function (containerID) {
 
             circumference = twoPI * radius;
             quadrantArc   = circumference / 4;
+
+            this.background();
         }
       }
     });
@@ -94,11 +133,11 @@ var CentsGauge = (function (containerID) {
               , y
               ;
 
-            this.ctx.beginPath();
-            this.ctx.arc(centerX,centerY,10,0,twoPI,false);
-            this.ctx.arc(centerX,centerY - radius,zeroDotRadius,0,twoPI,true);
-            this.ctx.fillStyle = this.color;
-            this.ctx.fill();
+            _bgCTX.beginPath();
+            _bgCTX.arc(centerX,centerY,10,0,twoPI,false);
+            _bgCTX.arc(centerX,centerY - radius,zeroDotRadius,0,twoPI,true);
+            _bgCTX.fillStyle = this.color;
+            _bgCTX.fill();
 
             while (arc > 0) {
 
@@ -109,13 +148,13 @@ var CentsGauge = (function (containerID) {
               xs = centerX + xc;
               y  = centerY - radius * Math.sin(alfa);
 
-              this.ctx.beginPath();
+              _bgCTX.beginPath();
 
-              this.ctx.arc(x,y,dotRadius,0,twoPI,true);
-              this.ctx.arc(xs,y,dotRadius,0,twoPI,true);
-              this.ctx.fillStyle = this.color;
+              _bgCTX.arc(x,y,dotRadius,0,twoPI,true);
+              _bgCTX.arc(xs,y,dotRadius,0,twoPI,true);
+              _bgCTX.fillStyle = this.color;
 
-              this.ctx.fill();
+              _bgCTX.fill();
 
               arc -= markStep;
             }
@@ -134,8 +173,6 @@ var CentsGauge = (function (containerID) {
               ;
 
             this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height);
-
-            this.background();
 
             this.ctx.font      = this.noteFont;
             this.ctx.fillStyle = this.color;
@@ -169,6 +206,8 @@ var CentsGauge = (function (containerID) {
         }
       }
     );
+
+    this.background();
   };
 
   if (!this.instance) {

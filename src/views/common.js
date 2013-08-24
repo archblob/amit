@@ -2,7 +2,7 @@
  * Copyright (c) 2013 Csernik Flaviu Andrei
  *
  * See the file LICENSE.txt for copying permission.
- * 
+ *
  */
 
 window.requestAnimationFrame =
@@ -31,7 +31,7 @@ var ViewContextAndStyle = (function () {
   function ViewContextAndStyle (containerID) {
 
     var _cvs = document.createElement("canvas");
-    _cvs.id = "gtunerView";
+    _cvs.id = "gtunerViewFg";
 
     document.getElementById(containerID).appendChild(_cvs);
 
@@ -50,7 +50,7 @@ var ViewContextAndStyle = (function () {
     var _freqFontSize = 20;
     var _noteFontName = "sans-serif";
     var _freqFontName = "sans-serif";
-      
+
     var _noteFont = _noteFontSize + "px " + _noteFontName;
     var _freqFont = _freqFontSize + "px " + _freqFontName;
 
