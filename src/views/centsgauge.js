@@ -7,6 +7,7 @@ var CentsGauge = (function (containerID) {
     var _width  = 400
       , _height = 200
       , twoPI   = 2 * Math.PI
+      , mxCents = 50
       ;
 
     this.cvs.width  = _width;
@@ -22,7 +23,7 @@ var CentsGauge = (function (containerID) {
       , quadrantArc   = circumference / 4
       , dotRadius     = 3
       , zeroDotRadius = 5
-      , markStep      = 50
+      , markStep      = 10
       , _bgCVS        = document.createElement("canvas")
       , _bgCTX        = _bgCVS.getContext("2d")
       ;
@@ -125,7 +126,8 @@ var CentsGauge = (function (containerID) {
         "background" : {
           value : function() {
 
-            var arc = quadrantArc - markStep
+            var scaledStep = (markStep * quadrantArc / mxCents)
+              , arc        = quadrantArc - scaledStep
               , alfa
               , x
               , xc
@@ -137,9 +139,8 @@ var CentsGauge = (function (containerID) {
             _bgCTX.arc(centerX,centerY,10,0,twoPI,false);
             _bgCTX.arc(centerX,centerY - radius,zeroDotRadius,0,twoPI,true);
             _bgCTX.fillStyle = this.color;
-            _bgCTX.fill();
 
-            while (arc > 0) {
+            while (arc > -1) {
 
               alfa = arc / radius;
               xc   = radius * Math.cos(alfa);
@@ -148,16 +149,13 @@ var CentsGauge = (function (containerID) {
               xs = centerX + xc;
               y  = centerY - radius * Math.sin(alfa);
 
-              _bgCTX.beginPath();
-
               _bgCTX.arc(x,y,dotRadius,0,twoPI,true);
               _bgCTX.arc(xs,y,dotRadius,0,twoPI,true);
-              _bgCTX.fillStyle = this.color;
 
-              _bgCTX.fill();
-
-              arc -= markStep;
+              arc -= scaledStep;
             }
+
+            _bgCTX.fill();
           }
         , enumerable   : false
         , configurable : false
@@ -166,7 +164,7 @@ var CentsGauge = (function (containerID) {
       , "run" : {
           value : function() {
 
-            var arc  = quadrantArc - (this.peek.cents * quadrantArc / 50)
+            var arc  = quadrantArc - (this.peek.cents * quadrantArc / mxCents)
               , alfa = arc / radius
               , x = centerX + radius * Math.cos(alfa)
               , y = centerY - radius * Math.sin(alfa)
