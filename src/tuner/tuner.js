@@ -1,6 +1,6 @@
 var Tuner = (function () {
 
-  function Tuner(callback) {
+  function Tuner() {
 
     if (Tuner.prototype._instance) {
       return Tuner.prototype._instance;
@@ -58,6 +58,8 @@ var Tuner = (function () {
           , configurable : false
           , set : function (clbk) {
             _viewCallback = clbk;
+
+            _viewCallback({ updateTime : _temporalWindow });
           }
         }
       , "downsampleFactor" : {
@@ -84,6 +86,8 @@ var Tuner = (function () {
               lowpass.frequency  = (_effectiveSamplerate / 2).toFixed(3);
 
               _windowFunction.length = _bufferSize;
+
+              _viewCallback({ updateTime : _temporalWindow });
             }
         }
       , "fftSize" : {
@@ -105,6 +109,8 @@ var Tuner = (function () {
               samples = new Ring(_bufferSize, 512);
 
               _windowFunction.length = _bufferSize;
+
+              _viewCallback({ updateTime : _temporalWindow });
             }
         }
       , "effectiveSamplerate" : {
@@ -135,7 +141,7 @@ var Tuner = (function () {
               return _frequencyMap;
             }
           , set : function (freqMap) {
-              
+
               if (freqMap.hasOwnProperty("closestNote")) {
                 _frequencyMap   = freqMap;
               } else {

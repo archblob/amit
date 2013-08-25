@@ -26,6 +26,11 @@ var CentsGauge = (function (containerID) {
       , markStep      = 10
       , _bgCVS        = document.createElement("canvas")
       , _bgCTX        = _bgCVS.getContext("2d")
+      , dCents        = 0
+      , totalSteps    = 30
+      , animStep      = 1
+      , dt            = 1 /* seconds */
+      , mxSteps       = dt * totalSteps
       ;
 
       _bgCVS.id = "gtunerViewBg";
@@ -164,7 +169,7 @@ var CentsGauge = (function (containerID) {
       , "run" : {
           value : function() {
 
-            var arc  = quadrantArc - (this.peek.cents * quadrantArc / mxCents)
+            var arc  = quadrantArc - (dCents * quadrantArc / mxCents)
               , alfa = arc / radius
               , x = centerX + radius * Math.cos(alfa)
               , y = centerY - radius * Math.sin(alfa)
@@ -186,6 +191,20 @@ var CentsGauge = (function (containerID) {
             this.ctx.strokeStyle = this.color;
             this.ctx.stroke();
 
+
+            if (dCents > this.peek.cents) {
+              dCents -= animStep;
+
+              if (dCents < this.peek.cents) {
+                dCents = this.peek.cents;
+              }
+            } else {
+              dCents += animStep;
+
+              if (dCents > this.peek.cents) {
+                dCents = this.peek.cents;
+              }
+            }
             window.requestAnimationFrame(this.run.bind(this));
           }
         , enumerable   : false
@@ -195,8 +214,19 @@ var CentsGauge = (function (containerID) {
       , "update" : {
           value : function (element) {
 
+            if (element.peek) {
+
             this.peek = element.peek;
 
+            tmpAnimStep = Math.abs(dCents - Math.abs(this.peek.cents)) / mxSteps;
+
+            animStep = tmpAnimStep > 1 ? tmpAnimStep : 1 ;
+            }
+
+            if (element.updateTime) {
+              dt = element.updateTime;
+              mxSteps = dt * totalSteps;
+            }
           }
         , enumerable   : false
         , configurable : false
