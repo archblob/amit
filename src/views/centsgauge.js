@@ -139,8 +139,11 @@ var CentsGauge = (function (containerID) {
         "background" : {
           value : function() {
 
-            var scaledStep = (markStep * quadrantArc / mxCents)
-              , arc        = quadrantArc - scaledStep
+            var unitStep = quadrantArc / mxCents
+              , arc      = quadrantArc
+              , halfMark = markStep / 2
+              , c        = mxCents
+              , currentTickLength
               , alfa
               , y0
               , y1
@@ -148,6 +151,8 @@ var CentsGauge = (function (containerID) {
               , xc1
               , yc0
               , yc1
+              , unitTickLength = tickLength / 2.7
+              , halfTickLength = tickLength / 1.6
               ;
 
             _bgCTX.beginPath();
@@ -160,14 +165,22 @@ var CentsGauge = (function (containerID) {
             _bgCTX.moveTo(centerX,centerY - radius);
             _bgCTX.lineTo(centerX,centerY - radius + tickLength);
 
-            while (arc > -1) {
+            while (c >= 0) {
+
+              if (c % markStep == 0) {
+                currentTickLength = tickLength;
+              } else if (c % halfMark == 0) {
+                currentTickLength = halfTickLength;
+              } else {
+                currentTickLength = unitTickLength;
+              }
 
               alfa = arc / radius;
 
               xc0 = radius * Math.cos(alfa);
-              xc1 = (radius - tickLength) * Math.cos(alfa);
+              xc1 = (radius - currentTickLength) * Math.cos(alfa);
               yc0 = radius * Math.sin(alfa);
-              yc1 = (radius - tickLength) * Math.sin(alfa);
+              yc1 = (radius - currentTickLength) * Math.sin(alfa);
 
               y0 = centerY - yc0;
               y1 = centerY - yc1;
@@ -177,7 +190,8 @@ var CentsGauge = (function (containerID) {
               _bgCTX.moveTo(centerX + xc0, y0);
               _bgCTX.lineTo(centerX + xc1, y1);
 
-              arc -= scaledStep;
+              arc -= unitStep;
+              c   -= 1;
             }
 
             _bgCTX.stroke();
