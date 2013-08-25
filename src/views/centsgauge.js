@@ -17,7 +17,7 @@ var CentsGauge = (function (containerID) {
     this.cvs.style.zIndex = 1;
 
     var centerX       = this.cvs.width / 2
-      , centerY       = this.cvs.height
+      , centerY       = this.cvs.height - 10
       , radius        = 160
       , circumference = twoPI * radius
       , quadrantArc   = circumference / 4
@@ -140,10 +140,10 @@ var CentsGauge = (function (containerID) {
           value : function() {
 
             var unitStep = quadrantArc / mxCents
-              , arc      = quadrantArc
+              , arc      = quadrantArc - unitStep
               , halfMark = markStep / 2
-              , c        = mxCents
-              , currentTickLength
+              , c        = mxCents - 1
+              , currentTickLength = tickLength
               , alfa
               , y0
               , y1
@@ -151,8 +151,9 @@ var CentsGauge = (function (containerID) {
               , xc1
               , yc0
               , yc1
-              , unitTickLength = tickLength / 2.7
-              , halfTickLength = tickLength / 1.6
+              , unitTickLength = tickLength / 3
+              , halfTickLength = tickLength / 1.5
+              , sTickLength    = currentTickLength / 2
               ;
 
             _bgCTX.beginPath();
@@ -162,8 +163,8 @@ var CentsGauge = (function (containerID) {
             _bgCTX.beginPath();
             _bgCTX.lineWidth = tickWidth;
 
-            _bgCTX.moveTo(centerX,centerY - radius);
-            _bgCTX.lineTo(centerX,centerY - radius + tickLength);
+            _bgCTX.moveTo(centerX, centerY - radius - sTickLength);
+            _bgCTX.lineTo(centerX, centerY - radius + sTickLength);
 
             while (c >= 0) {
 
@@ -177,16 +178,19 @@ var CentsGauge = (function (containerID) {
 
               alfa = arc / radius;
 
-              xc0 = radius * Math.cos(alfa);
-              xc1 = (radius - currentTickLength) * Math.cos(alfa);
-              yc0 = radius * Math.sin(alfa);
-              yc1 = (radius - currentTickLength) * Math.sin(alfa);
+              sTickLength = currentTickLength / 2;
+
+              xc0 = (radius + sTickLength) * Math.cos(alfa);
+              xc1 = (radius - sTickLength) * Math.cos(alfa);
+              yc0 = (radius + sTickLength) * Math.sin(alfa);
+              yc1 = (radius - sTickLength) * Math.sin(alfa);
 
               y0 = centerY - yc0;
               y1 = centerY - yc1;
 
               _bgCTX.moveTo(centerX - xc0, y0);
               _bgCTX.lineTo(centerX - xc1, y1);
+
               _bgCTX.moveTo(centerX + xc0, y0);
               _bgCTX.lineTo(centerX + xc1, y1);
 
