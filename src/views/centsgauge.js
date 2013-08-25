@@ -21,8 +21,9 @@ var CentsGauge = (function (containerID) {
       , radius        = 160
       , circumference = twoPI * radius
       , quadrantArc   = circumference / 4
-      , dotRadius     = 3
-      , zeroDotRadius = 5
+      , tickWidth     = 2
+      , maxTickWidth  = quadrantArc / mxCents
+      , tickLength    = 16
       , markStep      = 10
       , _bgCVS        = document.createElement("canvas")
       , _bgCTX        = _bgCVS.getContext("2d")
@@ -42,6 +43,9 @@ var CentsGauge = (function (containerID) {
 
       _bgCVS.style.position = "absolute";
       _bgCVS.style.zIndex   = 0;
+
+      _bgCTX.fillStyle   = this.color;
+      _bgCTX.strokeStyle = this.color;
 
     Object.defineProperties(this, {
         "width" : {
@@ -74,26 +78,29 @@ var CentsGauge = (function (containerID) {
             this.background();
           }
         }
-      , "dotRadius" : {
+      , "tickWidth" : {
            configurable : false
          , enumerable   : true
          , get : function () {
-             return dotRadius;
+             return tickWidth;
            }
          , set : function (val) {
-             dotRadius = val;
+
+             if (val <= maxTickWidth) {
+               tickWidth = val;
+             }
 
              this.background();
            }
         }
-      , "zeroDotRadius" : {
+      , "tickLength" : {
            configurable : false
          , enumerable   : true
          , get : function () {
-             return zeroDotRadius;
+             return tickLength;
          }
          , set : function (val) {
-             zeroDotRadius = val;
+             tickLength = val;
 
              this.background();
            }
@@ -121,6 +128,7 @@ var CentsGauge = (function (containerID) {
 
             circumference = twoPI * radius;
             quadrantArc   = circumference / 4;
+            maxTickWidth  = quadrantArc / mxCents
 
             this.background();
         }
@@ -134,33 +142,45 @@ var CentsGauge = (function (containerID) {
             var scaledStep = (markStep * quadrantArc / mxCents)
               , arc        = quadrantArc - scaledStep
               , alfa
-              , x
-              , xc
-              , xs
-              , y
+              , y0
+              , y1
+              , xc0
+              , xc1
+              , yc0
+              , yc1
               ;
 
             _bgCTX.beginPath();
             _bgCTX.arc(centerX,centerY,10,0,twoPI,false);
-            _bgCTX.arc(centerX,centerY - radius,zeroDotRadius,0,twoPI,true);
-            _bgCTX.fillStyle = this.color;
+            _bgCTX.fill();
+
+            _bgCTX.beginPath();
+            _bgCTX.lineWidth = tickWidth;
+
+            _bgCTX.moveTo(centerX,centerY - radius);
+            _bgCTX.lineTo(centerX,centerY - radius + tickLength);
 
             while (arc > -1) {
 
               alfa = arc / radius;
-              xc   = radius * Math.cos(alfa);
 
-              x  = centerX - xc;
-              xs = centerX + xc;
-              y  = centerY - radius * Math.sin(alfa);
+              xc0 = radius * Math.cos(alfa);
+              xc1 = (radius - tickLength) * Math.cos(alfa);
+              yc0 = radius * Math.sin(alfa);
+              yc1 = (radius - tickLength) * Math.sin(alfa);
 
-              _bgCTX.arc(x,y,dotRadius,0,twoPI,true);
-              _bgCTX.arc(xs,y,dotRadius,0,twoPI,true);
+              y0 = centerY - yc0;
+              y1 = centerY - yc1;
+
+              _bgCTX.moveTo(centerX - xc0, y0);
+              _bgCTX.lineTo(centerX - xc1, y1);
+              _bgCTX.moveTo(centerX + xc0, y0);
+              _bgCTX.lineTo(centerX + xc1, y1);
 
               arc -= scaledStep;
             }
 
-            _bgCTX.fill();
+            _bgCTX.stroke();
           }
         , enumerable   : false
         , configurable : false
