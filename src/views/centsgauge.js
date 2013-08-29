@@ -4,8 +4,9 @@ var CentsGauge = (function (containerID) {
 
     ViewContextAndStyle.apply(this,arguments);
 
-    var _width  = 400
-      , _height = 200
+    var _width  = 360
+      , _height = 180
+      , pradius = _width / 2 - 20
       , twoPI   = 2 * Math.PI
       , mxCents = 50
       ;
@@ -14,11 +15,15 @@ var CentsGauge = (function (containerID) {
     this.cvs.height = _height;
 
     this.cvs.style.position = "absolute";
-    this.cvs.style.zIndex = 1;
+    this.cvs.style.zIndex   = 1;
+
+    this.ctx.textAlign   = "center";
+    this.ctx.fillStyle   = this.color;
+    this.ctx.strokeStyle = this.color;
 
     var centerX       = this.cvs.width / 2
-      , centerY       = this.cvs.height - 10
-      , radius        = 160
+      , centerY       = this.cvs.height
+      , radius        = pradius < _height - 10 ? pradius : _height - 10
       , circumference = twoPI * radius
       , quadrantArc   = circumference / 4
       , tickWidth     = 2
@@ -34,6 +39,9 @@ var CentsGauge = (function (containerID) {
       , mxSteps       = dt * totalSteps
       ;
 
+      this.noteFontSize = _width / 8;
+      this.freqFontSize = _width / 16;
+
       _bgCVS.id = "gtunerViewBg";
 
       document.getElementById(containerID).appendChild(_bgCVS);
@@ -46,6 +54,7 @@ var CentsGauge = (function (containerID) {
 
       _bgCTX.fillStyle   = this.color;
       _bgCTX.strokeStyle = this.color;
+      _bgCTX.textAlign   = "center";
 
     Object.defineProperties(this, {
         "width" : {
@@ -58,9 +67,13 @@ var CentsGauge = (function (containerID) {
             _width = val;
 
             this.cvs.width = _width;
-            centerX  = this.cvs.width / 2;
+            this.noteFontSize = _width / 8;
 
-            this.background();
+            centerX  = this.cvs.width / 2;
+            pradius  = _width / 2 - 20;
+            radius   = pradius < _height - 10 ? pradius : _height - 10;
+            this.noteFontSize = _width / 8;
+
           }
         }
       , "height" : {
@@ -74,6 +87,9 @@ var CentsGauge = (function (containerID) {
 
             this.cvs.height = _height;
             centerY         = this.cvs.height;
+
+            pradius  = _width / 2 - 20;
+            radius   = pradius < _height - 10 ? pradius : _height - 10;
 
             this.background();
           }
@@ -211,22 +227,22 @@ var CentsGauge = (function (containerID) {
               , alfa = arc / radius
               , x = centerX + radius * Math.cos(alfa)
               , y = centerY - radius * Math.sin(alfa)
+              , noteTextWidth
+              , frequencyTextWidth
               ;
 
             this.ctx.clearRect(0,0,this.cvs.width,this.cvs.height);
 
             this.ctx.font      = this.noteFont;
-            this.ctx.fillStyle = this.color;
 
-            this.ctx.fillText(this.peek.note.name,20,50);
+            this.ctx.fillText(this.peek.note.name,centerX, centerY - radius / 1.5);
 
             this.ctx.font = this.freqFont;
-            this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",this.cvs.width-110,40);
+            this.ctx.fillText(this.peek.frequency.toFixed(2) + " Hz",centerX, centerY - radius / 2.5);
 
             this.ctx.beginPath();
             this.ctx.moveTo(centerX,centerY);
             this.ctx.lineTo(x,y);
-            this.ctx.strokeStyle = this.color;
             this.ctx.stroke();
 
 
