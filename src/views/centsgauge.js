@@ -32,8 +32,8 @@ var viewElement   = document.createElement("div")
   , freqFontSize  = width / 16
   , noteFontName  = "sans-serif"
   , freqFontName  = "sans-serif"
-  , noteFont      = noteFontSize + "px " + noteFontName
-  , freqFont      = freqFontSize + "px " + freqFontName
+  , noteFont      = fontStringPX(noteFontSize,noteFontName)
+  , freqFont      = fontStringPX(freqFontSize,freqFontName)
   ;
 
 /* FOREGROUND Canvas setup & properties */
@@ -300,7 +300,7 @@ function CentsGauge(containerID) {
       , enumerable   : true
       , set : function (val) {
           noteFontSize = val;
-          noteFont     = noteFontSize + "px " + noteFontName;
+          noteFont     = fontStringPX(noteFontSize,noteFontName);
         }
       , get : function () {
           return noteFontSize;
@@ -311,7 +311,7 @@ function CentsGauge(containerID) {
       , enumerable   : true
       , set : function (val) {
           freqFontSize = val;
-          freqFont     = freqFontSize + "px " + freqFontName;
+          freqFont     = fontStringPX(freqFontSize,freqFontName);
       }
       , get : function () {
           return freqFontSize;
@@ -322,7 +322,7 @@ function CentsGauge(containerID) {
       , enumerable   : true
       , set : function (val) {
           noteFontName = val;
-          noteFont     = noteFontSize + "px " + noteFontName;
+          noteFont     = fontStringPX(noteFontSize,noteFontName);
       }
       , get : function () {
           return noteFontName;
@@ -333,7 +333,7 @@ function CentsGauge(containerID) {
       , enumerable   : true
       , set : function (val) {
           freqFontName = val;
-          freqFont = freqFontSize + "px " + freqFontName;
+          freqFont = fontStringPX(freqFontSize,freqFontName);
       }
       , get : function () {
           return freqFontName;

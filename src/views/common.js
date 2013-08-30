@@ -26,6 +26,10 @@ var defaultPeek = {
       frequency : 0.00
 };
 
+function fontStringPX(size, name) {
+  return size + "px " + name;
+}
+
 var ViewContextAndStyle = (function () {
 
   function ViewContextAndStyle (containerID) {
