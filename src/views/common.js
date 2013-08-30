@@ -17,16 +17,16 @@ var white = "rgb(227,227,227)";
 var red   = "rgb(140,46,46)";
 var blue  = "rgb(44,114,158)";
 
-var ViewContextAndStyle = (function () {
-
-  var defaultPeek = {
+var defaultPeek = {
       note : {
         name : "I",
         frequency : 0.00
       },
       cents : 0,
       frequency : 0.00
-  };
+};
+
+var ViewContextAndStyle = (function () {
 
   function ViewContextAndStyle (containerID) {
 
