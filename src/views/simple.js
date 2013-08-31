@@ -1,191 +1,283 @@
-var SimpleView = (function (containerID) {
+(function (global) {
 
-  function SimpleView() {
+var cvs              = document.createElement("canvas")
+  , ctx              = cvs.getContext("2d")
+  , peek             = defaultPeek
+  , width            = 400
+  , height           = 200
+  , xpad             = 10
+  , ypad             = 10
+  , semiMajorAxis    = width / 6
+  , semiMinorAxis    = height / 3
+  , cx               = width / 2
+  , cy               = height / 2
+  , x                = width - (semiMajorAxis + 2 * xpad)
+  , verticalSepX     = cx + xpad
+  , verticalSepBY    = height - ypad
+  , noteFontMaxWidth = cx - xpad
+  , noteFontSize     = height - 2 * ypad
+  , freqFontSize     = 0.2 * height
+  , baseColor        = "rgb(58,58,58)"   /* almost black */
+  , tunedColor       = "rgb(122,153,66)" /* green */
+  , notTunedColor    = "rgb(140,46,46)"  /* red */
+  , noteFontName     = "sans-serif"
+  , freqFontName     = "sans-serif"
+  , noteFont         = fontStringPX(noteFontSize,noteFontName)
+  , freqFont         = fontStringPX(freqFontSize,freqFontName)
+  ;
 
-    ViewContextAndStyle.apply(this, arguments);
+cvs.width  = width;
+cvs.height = height;
 
-    var _width  = 400;
-    var _height = 200;
+ctx.fillStyle   = baseColor;
+ctx.strokeStyle = baseColor
 
-    this.cvs.width  = _width;
-    this.cvs.height = _height;
+cvs.id = "gtunerView";
 
-    var xpad = 10;
-    var ypad = 10;
+function drawArrow(direction) {
 
-    this.noteFontSize = _height - 2 * ypad; 
-    this.freqFontSize = 0.2 * _height;
+  var y = cy + (freqFontSize / 2 * direction)
+    , dir    = semiMinorAxis * direction
+    , rpoint = y + (dir / 2)
+    ;
 
-    var semiMajorAxis = _width / 6;
-    var semiMinorAxis = _height / 3;
+  ctx.beginPath();
 
-    var cx = _width / 2;
-    var cy = _height / 2;
-    var x  = _width - (semiMajorAxis + 2 * xpad);
+  ctx.moveTo(x - semiMajorAxis,y);
+  ctx.lineTo(x,y + dir);
+  ctx.lineTo(x + semiMajorAxis, y);
+  ctx.bezierCurveTo(x, rpoint, x, rpoint, x - semiMajorAxis, y);
 
-    var verticalSepX  = cx + xpad;
-    var verticalSepBY = _height - ypad;
-    var horizontalSepY = this.noteFontSize + 2 * ypad;
+  ctx.fill();
+}
 
-    var noteFontMaxWidth = cx - xpad;
+function drawNoteName() {
 
-    Object.defineProperties(this, {
+  ctx.save();
+
+  ctx.textAlign    = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.font         = noteFont;
+
+  ctx.fillText(peek.note.name, xpad, cy, noteFontMaxWidth);
+
+  ctx.restore();
+}
+
+function drawFrequency() {
+
+  var cents = Math.abs(peek.cents);
+
+  ctx.save();
+
+  ctx.fillStyle = cents - 5 <= 5 ? tunedColor : notTunedColor;
+
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font         = freqFont;
+
+  ctx.fillText(peek.frequency.toFixed(2), x, cy);
+
+  ctx.restore();
+}
+
+function drawSeparator(x0, y0, x1, y1) {
+
+  ctx.save();
+
+  ctx.beginPath();
+
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+
+  ctx.strokeStyle = lightBlack;
+  ctx.lineCap     = "round";
+
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function SimpleView(containerID) {
+
+  if (SimpleView.prototype.instance) {
+    console.log("An instance of SimpleView already exists.");
+    return SimpleView.prototype.instance;
+  }
+
+  SimpleView.prototype.instance = this;
+
+  Object.defineProperties(this, {
       "width" : {
-        enumerable   : true,
-        configurable : false,
-        get          : function () {
-          return _width;
-        },
-        set          : function (val) {
-          _width = val;
+        enumerable   : true
+      , configurable : false
+      , get : function () {
+          return width;
+      }
+      , set : function (val) {
+          width = val;
 
-          this.cvs.width = _width;
-          semiMajorAxis  = _width / 6;
+          cvs.width = width;
+          semiMajorAxis  = width / 6;
 
-          cx = _width / 2;
-          x  = _width - (semiMajorAxis + xpad);
+          cx = width / 2;
+          x  = width - (semiMajorAxis + xpad);
+
           noteFontMaxWidth = cx - xpad;
           verticalSepX     = cx + xpad;
-        }
-      },
-      "height" : {
-        enumerable   : true,
-        configurable : false,
-        get          : function () {
-          return _height;
-        },
-        set          : function (val) {
-          _height = val;
-
-          cy              = _height / 2;
-          this.cvs.height = _height;
-          semiMinorAxis   = _height / 3;
-          verticalSepBY   = _height - ypad;
-          horizontalSepY  = this.noteFontSize + 2 * ypad;
-
-          this.noteFontSize = 0.6 * _height; 
-          this.freqFontSize = 0.2 * _height;
-        }
       }
-    });
-    
-    Object.defineProperties(SimpleView.prototype, {
-      "drawArrow" : {
-        value        : function (direction) {
+    }
+    , "height" : {
+        enumerable   : true
+      , configurable : false
+      , get : function () {
+          return height;
+      }
+      , set : function (val) {
+          height = val;
 
-          var y = cy + (this.freqFontSize / 2 * direction); 
-          var dir    = semiMinorAxis * direction;
-          var rpoint = y + (dir / 2);
+          cy         = height / 2;
+          cvs.height = height;
 
-          this.ctx.beginPath();
+          semiMinorAxis = height / 3;
+          verticalSepBY = height - ypad;
 
-          this.ctx.moveTo(x - semiMajorAxis,y);
-          this.ctx.lineTo(x,y + dir);
-          this.ctx.lineTo(x + semiMajorAxis, y);
-          this.ctx.bezierCurveTo(x, rpoint, x, rpoint, x - semiMajorAxis, y);
-
-          this.ctx.fill();
-        },
-        enumerable   : false,
+          noteFontSize = 0.6 * height;
+          freqFontSize = 0.2 * height;
+        }
+    }
+    , "peek" : {
+        value        : peek,
         configurable : false,
-        writable     : false,
-      },
-     "drawNoteName" : {
-       value        : function () {
+        enumerable   : true,
+        writable     : false
+    }
+    , "baseColor" : {
+        configurable : false
+      , enumerable   : true
+      , get : function () {
+          return baseColor;
+      }
+      , set : function (value) {
+          baseColor = value;
 
-         this.ctx.save();
+          ctx.fillStyle   = baseColor;
+          ctx.strokeStyle = baseColor;
+        }
+    }
+    , "tunedColor" : {
+        configurable : false
+      , enumerable   : true
+      , get : function () {
+          return tunedColor;
+      }
+      , set : function (value) {
+          tunedColor = value;
+      }
+    }
+    , "notTunedColor" : {
+        configurable : false
+      , enumerable   : true
+      , get : function () {
+          return notTunedColor;
+      }
+      , set : function (value) {
+          notTunedColor = value;
+      }
+    }
+    , "noteFont" : {
+        configurable : false
+      , enumerable   : false
+      , get : function () {
+          return noteFont;
+        }
+    }
+    , "freqFont" : {
+        configurable : false
+      , enumerable   : false
+      , get : function () {
+          return freqFont;
+      }
+    }
+    , "noteFontSize" : {
+        configurable : false
+      , enumerable   : true
+      , set : function (val) {
+          noteFontSize = val;
+          noteFont     = fontStringPX(noteFontSize,noteFontName);
+        }
+      , get : function () {
+          return noteFontSize;
+      }
+    }
+    , "freqFontSize" : {
+        configurable : false
+      , enumerable   : true
+      , set : function (val) {
+          freqFontSize = val;
+          freqFont     = fontStringPX(freqFontSize,freqFontName);
+      }
+      , get : function () {
+          return freqFontSize;
+      }
+    }
+    , "noteFontName" : {
+        configurable : false
+      , enumerable   : true
+      , set : function (val) {
+          noteFontName = val;
+          noteFont     = fontStringPX(noteFontSize,noteFontName);
+      }
+      , get : function () {
+          return noteFontName;
+        }
+    }
+    , "freqFontName" : {
+        configurable : false
+      , enumerable   : true
+      , set : function (val) {
+          freqFontName = val;
+          freqFont = fontStringPX(freqFontSize,freqFontName);
+      }
+      , get : function () {
+          return freqFontName;
+      }
+    }
+    , "run" : {
+        value : function () {
 
-         this.ctx.textAlign    = 'left';
-         this.ctx.textBaseline = 'middle';
-         this.ctx.font         = this.noteFont;
+          var cents   = peek.cents
+            , tuneDir = cents > 0 ? 1 : -1
+            ;
 
-         this.ctx.fillText(this.peek.note.name, xpad, cy, noteFontMaxWidth);
+          ctx.clearRect(0, 0, width, height);
 
-         this.ctx.restore();
-       },
-       enumerable   : false,
-       configurable : false,
-       writable     : false
-     },
-     "drawFrequency" : {
-       value        : function () {
+          drawSeparator(verticalSepX, ypad, verticalSepX, verticalSepBY);
+          drawArrow(tuneDir);
+          drawFrequency();
+          drawNoteName();
 
-         var cents = Math.abs(this.peek.cents);
+          window.requestAnimationFrame(this.run.bind(this));
+       }
+      , enumerable   : false
+      , configurable : false
+      , writable     : false
+    }
+    , "update" : {
+        value : function (element) {
+          if (element.peek) {
+            peek = element.peek;
+          }
+      }
+      , enumerable   : false
+      , configurable : false
+      , writable     : false
+    }
+  });
 
-         this.ctx.save();
+  document.getElementById(containerID).appendChild(cvs);
+}
 
-         this.ctx.fillStyle = cents - 5 <= 5 ? this.tunedColor : this.notTunedColor; 
+  global.SimpleView = SimpleView;
 
-         this.ctx.textAlign    = 'center';
-         this.ctx.textBaseline = 'middle';
-         this.ctx.font         = this.freqFont;
-
-         this.ctx.fillText(this.peek.frequency.toFixed(2), x, cy);
-
-         this.ctx.restore();
-       },
-       enumerable   : false,
-       configurable : false,
-       writable     : false
-     },
-     "drawSeparator" : {
-       value        : function (x0, y0, x1, y1) {
-
-         this.ctx.save();
-
-         this.ctx.beginPath();
-
-         this.ctx.moveTo(x0, y0);
-         this.ctx.lineTo(x1, y1);
-
-         this.ctx.strokeStyle = lightBlack;
-         this.ctx.lineCap = "round";
-
-         this.ctx.stroke();
-
-         this.ctx.restore();
-       },
-       enumerable   : false,
-       configurable : false,
-       writable     : false
-     },
-     
-     "run" : {
-       value        : function () {
-
-         var cents   = this.peek.cents;
-         var tuneDir = cents > 0 ? 1 : -1;
-
-         this.ctx.clearRect(0, 0, _width, _height);
-
-         this.drawSeparator(verticalSepX, ypad, verticalSepX, verticalSepBY);
-         this.drawArrow(tuneDir);
-         this.drawFrequency();
-         this.drawNoteName();
-
-         window.requestAnimationFrame(this.run.bind(this));
-       },
-       enumerable   : false,
-       configurable : false,
-       writable     : false
-     },
-     "update" : {
-       value        : function (element) {
-         this.peek = element.peek;
-       },
-       enumerable   : true,
-       configurable : false,
-       writable     : false
-     }
-    });
-  }
-
-  if (!this.instance) {
-    this.instance = new SimpleView(containerID);
-  } else {
-    console.log("An instance of SimpleView already exists.");
-  }
-
-  return this.instance;
-
-});
+}(window));
