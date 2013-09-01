@@ -48,6 +48,7 @@ fgCVS.style.zIndex   = 1;
 fgCTX.textAlign   = "center";
 fgCTX.fillStyle   = baseColor;
 fgCTX.strokeStyle = baseColor;
+fgCTX.font = noteFont;
 /* FOREGROUND */
 
 /* BACKGROUND Canvas setup & properties */
@@ -352,18 +353,19 @@ function CentsGauge(containerID) {
 
           fgCTX.clearRect(0,0,width,height);
 
-          fgCTX.font = noteFont;
-
           fgCTX.fillText(peek.note.name,centerX, centerY - radius / 1.5);
+
+          fgCTX.save();
 
           fgCTX.font = freqFont;
           fgCTX.fillText(peek.frequency.toFixed(2) + " Hz",centerX, centerY - radius / 2.5);
+
+          fgCTX.restore();
 
           fgCTX.beginPath();
           fgCTX.moveTo(centerX,centerY);
           fgCTX.lineTo(x,y);
           fgCTX.stroke();
-
 
           if (dCents > peek.cents) {
             dCents -= animStep;
