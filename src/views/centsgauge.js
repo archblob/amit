@@ -6,6 +6,7 @@ var viewElement   = document.createElement("div")
   , fgCTX         = fgCVS.getContext("2d")
   , bgCTX         = bgCVS.getContext("2d")
   , peek          = defaultPeek
+  , audDiff       = 5 /* cents */
   , mxCents       = 50
   , twoPI         = 2 * Math.PI
   , width         = 360
@@ -18,6 +19,7 @@ var viewElement   = document.createElement("div")
   , quadrantArc   = circumference / 4
   , tickWidth     = 2
   , maxTickWidth  = quadrantArc / mxCents
+  , unitStep      = quadrantArc / mxCents
   , tickLength    = 16
   , markStep      = 10
   , dCents        = 0
@@ -71,40 +73,32 @@ viewElement.id = "gtunerView";
 viewElement.appendChild(bgCVS);
 viewElement.appendChild(fgCVS);
 
-function drawBackground() {
+function drawTicks(from, to, color, arc) {
 
-var unitStep = quadrantArc / mxCents
-  , arc      = quadrantArc - unitStep
-  , halfMark = markStep / 2
-  , c        = mxCents - 1
-  , currentTickLength = tickLength
-  , alfa
-  , y0
-  , y1
-  , xc0
-  , xc1
-  , yc0
-  , yc1
-  , unitTickLength = tickLength / 3
-  , halfTickLength = tickLength / 1.5
-  , sTickLength    = currentTickLength / 2
-  ;
+  /* The thick at zero is painted two times, this will affect the color. */
 
-  bgCTX.beginPath();
-  bgCTX.arc(centerX,centerY,10,0,twoPI,false);
-  bgCTX.fill();
+  var halfMark = markStep / 2
+    , currentTickLength = tickLength
+    , alfa
+    , y0
+    , y1
+    , xc0
+    , xc1
+    , yc0
+    , yc1
+    , unitTickLength = tickLength / 3
+    , halfTickLength = tickLength / 1.5
+    , sTickLength    = currentTickLength / 2
+    ;
 
   bgCTX.beginPath();
-  bgCTX.lineWidth = tickWidth;
+  bgCTX.strokeStyle = color;
 
-  bgCTX.moveTo(centerX, centerY - radius - sTickLength);
-  bgCTX.lineTo(centerX, centerY - radius + sTickLength);
+  while (from >= to) {
 
-  while (c >= 0) {
-
-    if (c % markStep == 0) {
+    if (from % markStep == 0) {
       currentTickLength = tickLength;
-    } else if (c % halfMark == 0) {
+    } else if (from % halfMark == 0) {
       currentTickLength = halfTickLength;
     } else {
       currentTickLength = unitTickLength;
@@ -128,11 +122,29 @@ var unitStep = quadrantArc / mxCents
     bgCTX.moveTo(centerX + xc0, y0);
     bgCTX.lineTo(centerX + xc1, y1);
 
-    arc -= unitStep;
-    c   -= 1;
+    arc  -= unitStep;
+    from -= 1;
   }
 
   bgCTX.stroke();
+  return arc;
+}
+
+function drawBackground() {
+
+  var arc = quadrantArc
+    , sTickLength = tickLength / 2
+    ;
+
+  bgCTX.beginPath();
+  bgCTX.arc(centerX,centerY,10,0,twoPI,false);
+  bgCTX.fill();
+
+  bgCTX.lineWidth = tickWidth;
+
+  arc = drawTicks(mxCents, mxCents - audDiff, tunedColor, arc);
+  drawTicks(mxCents - audDiff - 1,0, notTunedColor, arc);
+
 }
 
 function CentsGauge(containerID) {
