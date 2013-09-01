@@ -59,8 +59,8 @@ bgCVS.height = height;
 bgCVS.style.position = "absolute";
 bgCVS.style.zIndex   = 0;
 
-bgCTX.fillStyle   = this.color;
-bgCTX.strokeStyle = this.color;
+bgCTX.fillStyle   = baseColor;
+bgCTX.strokeStyle = baseColor;
 bgCTX.textAlign   = "center";
 /* BACKGROUND */
 
