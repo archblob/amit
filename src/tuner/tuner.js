@@ -197,10 +197,7 @@ var Tuner = (function () {
               return _maxHarmFrequency;
           }
       }
-    });
-
-    Object.defineProperties(Tuner.prototype, {
-      "run" : {
+      , "run" : {
             value : function () {
 
               if (!source) {
@@ -212,11 +209,11 @@ var Tuner = (function () {
               }
 
               processor.onaudioprocess = function (event) {
-                var input = event.inputBuffer.getChannelData(0);
+              var input = event.inputBuffer.getChannelData(0);
 
-                samples.concat(input);
+              samples.concat(input);
 
-                event.outputBuffer.getChannelData(0).set(input);
+              event.outputBuffer.getChannelData(0).set(input);
               };
 
               source.connect(lowpass);
@@ -226,12 +223,11 @@ var Tuner = (function () {
 
               return window.setInterval(fundamental
                                        , _temporalWindow.toFixed(3) * 1000);
-
-            }
+          }
           , enumerable   : false
           , configurable : false
           , writable     : false
-        }
+      }
     });
 
   }
