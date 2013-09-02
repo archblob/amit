@@ -31,6 +31,31 @@ var Tuner = (function () {
       , processor
       ;
 
+    function fundamental() {
+
+      var downsampled = []
+        , spectrum
+        , peek
+        , i
+        ;
+
+      _windowFunction.process(samples);
+
+      for (i = 0; i < samples.length ; i += _downsampleFactor) {
+        downsampled.push(samples.get(i));
+      }
+
+      fft.forward(downsampled);
+
+      spectrum = fft.spectrum;
+      peek     = HPS(spectrum,_harmonics);
+
+      _viewCallback({
+        peek : _frequencyMap.closestNote(peek * _frequencyResolution),
+        spectrum : spectrum
+      });
+    }
+
     Object.defineProperties(this, {
         "setAudioStream": {
             enumebrable  : false
@@ -175,36 +200,7 @@ var Tuner = (function () {
     });
 
     Object.defineProperties(Tuner.prototype, {
-        "fundamental" : {
-            value : function () {
-
-              var downsampled = []
-                , spectrum
-                , peek
-                , i
-                ;
-
-              _windowFunction.process(samples);
-
-              for (i = 0; i < samples.length ; i += _downsampleFactor) {
-                downsampled.push(samples.get(i));
-              }
-
-              fft.forward(downsampled);
-
-              spectrum = fft.spectrum;
-              peek     = HPS(spectrum,_harmonics);
-
-              _viewCallback({
-                  peek : _frequencyMap.closestNote(peek * _frequencyResolution),
-                  spectrum : spectrum
-              });
-            }
-          , enumerable   : false
-          , configurable : false
-          , writable     : false
-        }
-      , "run" : {
+      "run" : {
             value : function () {
 
               if (!source) {
@@ -228,8 +224,8 @@ var Tuner = (function () {
               highpass.connect(processor);
               processor.connect(context.destination);
 
-              return window.setInterval(this.fundamental,
-                                      _temporalWindow.toFixed(3) * 1000);
+              return window.setInterval(fundamental
+                                       , _temporalWindow.toFixed(3) * 1000);
 
             }
           , enumerable   : false
