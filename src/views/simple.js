@@ -149,10 +149,10 @@ function SimpleView(containerID) {
         }
     }
     , "peek" : {
-        value        : peek,
-        configurable : false,
-        enumerable   : true,
-        writable     : false
+        value        : peek
+      , configurable : false
+      , enumerable   : true
+      , writable     : false
     }
     , "baseColor" : {
         configurable : false
