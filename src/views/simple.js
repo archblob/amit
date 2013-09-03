@@ -18,6 +18,7 @@ var cvs              = document.createElement("canvas")
   , noteFontSize     = height - 2 * ypad
   , freqFontSize     = 0.2 * height
   , baseColor        = "rgb(58,58,58)"   /* almost black */
+  , bgColor          = "white"
   , tunedColor       = "rgb(122,153,66)" /* green */
   , notTunedColor    = "rgb(140,46,46)"  /* red */
   , noteFontName     = "sans-serif"
@@ -28,6 +29,7 @@ var cvs              = document.createElement("canvas")
 
 cvs.width  = width;
 cvs.height = height;
+cvs.style.background = bgColor;
 
 ctx.fillStyle   = baseColor;
 ctx.strokeStyle = baseColor
@@ -90,7 +92,7 @@ function drawSeparator(x0, y0, x1, y1) {
   ctx.moveTo(x0, y0);
   ctx.lineTo(x1, y1);
 
-  ctx.strokeStyle = lightBlack;
+  ctx.strokeStyle = baseColor;
   ctx.lineCap     = "round";
 
   ctx.stroke();
@@ -163,7 +165,19 @@ function SimpleView(containerID) {
 
           ctx.fillStyle   = baseColor;
           ctx.strokeStyle = baseColor;
-        }
+      }
+    }
+    , "bgColor" : {
+        configurable : false
+      , enumerable   : true
+      , get : function () {
+          return bgColor;
+      }
+      , set : function (value) {
+        bgColor = value;
+
+        cvs.style.background = bgColor;
+      }
     }
     , "tunedColor" : {
         configurable : false

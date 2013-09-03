@@ -28,6 +28,7 @@ var viewElement   = document.createElement("div")
   , dt            = 1 /* seconds */
   , mxSteps       = dt * totalSteps
   , baseColor     = "rgb(58,58,58)"   /* almost black */
+  , bgColor       = "white"
   , tunedColor    = "rgb(122,153,66)" /* green */
   , notTunedColor = "rgb(140,46,46)"  /* red */
   , noteFontSize  = width / 8
@@ -61,9 +62,11 @@ bgCVS.height = height;
 
 bgCVS.style.position = "absolute";
 bgCVS.style.zIndex   = 0;
+bgCVS.style.background = bgColor;
 
 bgCTX.fillStyle   = baseColor;
 bgCTX.strokeStyle = baseColor;
+bgCTX.lineWidth   = tickWidth;
 bgCTX.textAlign   = "center";
 /* BACKGROUND */
 
@@ -132,15 +135,13 @@ function drawTicks(from, to, color, arc) {
 
 function drawBackground() {
 
-  var arc = quadrantArc
-    , sTickLength = tickLength / 2
-    ;
+  var arc = quadrantArc;
+
+  bgCTX.clearRect(0,0,bgCVS.width,bgCVS.height);
 
   bgCTX.beginPath();
   bgCTX.arc(centerX,centerY,10,0,twoPI,false);
   bgCTX.fill();
-
-  bgCTX.lineWidth = tickWidth;
 
   arc = drawTicks(mxCents, mxCents - audDiff, tunedColor, arc);
   drawTicks(mxCents - audDiff - 1,0, notTunedColor, arc);
@@ -207,6 +208,7 @@ function CentsGauge(containerID) {
 
           if (val <= maxTickWidth) {
             tickWidth = val;
+            bgCTX.lineWidth = tickWidth;
           }
 
           drawBackground();
@@ -272,7 +274,19 @@ function CentsGauge(containerID) {
 
           bgCTX.fillStyle   = baseColor;
           bgCTX.strokeStyle = baseColor;
-        }
+      }
+    }
+    , "bgColor" : {
+        configurable : false
+      , enumerable : true
+      , get : function () {
+          return bgColor;
+      }
+      , set : function (value) {
+          bgColor = value;
+
+          bgCVS.style.background = bgColor;
+      }
     }
     , "tunedColor" : {
         configurable : false
