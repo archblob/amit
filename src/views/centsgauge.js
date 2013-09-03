@@ -274,6 +274,8 @@ function CentsGauge(containerID) {
 
           bgCTX.fillStyle   = baseColor;
           bgCTX.strokeStyle = baseColor;
+
+          drawBackground();
       }
     }
     , "bgColor" : {
