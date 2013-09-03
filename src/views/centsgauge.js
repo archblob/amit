@@ -48,10 +48,12 @@ fgCVS.height = height;
 fgCVS.style.position = "absolute";
 fgCVS.style.zIndex   = 1;
 
-fgCTX.textAlign   = "center";
-fgCTX.fillStyle   = baseColor;
-fgCTX.strokeStyle = baseColor;
-fgCTX.font = noteFont;
+function fgSetStyle() {
+  fgCTX.textAlign   = "center";
+  fgCTX.fillStyle   = baseColor;
+  fgCTX.strokeStyle = baseColor;
+  fgCTX.font        = noteFont;
+}
 /* FOREGROUND */
 
 /* BACKGROUND Canvas setup & properties */
@@ -64,10 +66,11 @@ bgCVS.style.position = "absolute";
 bgCVS.style.zIndex   = 0;
 bgCVS.style.background = bgColor;
 
-bgCTX.fillStyle   = baseColor;
-bgCTX.strokeStyle = baseColor;
-bgCTX.lineWidth   = tickWidth;
-bgCTX.textAlign   = "center";
+function bgSetStyle() {
+  bgCTX.fillStyle   = baseColor;
+  bgCTX.strokeStyle = baseColor;
+  bgCTX.lineWidth   = tickWidth;
+}
 /* BACKGROUND */
 
 /* Wrap background and foreground elements for easier manipulation */
@@ -170,13 +173,10 @@ function CentsGauge(containerID) {
           fgCVS.width = width;
           bgCVS.width = width;
 
-          this.noteFontSize = width / 8;
-
           centerX  = width / 2;
-          pradius  = width / 2 - 20;
-          radius   = pradius < height - 10 ? pradius : height - 10;
 
-          noteFontSize = width / 8;
+          bgSetStyle();
+          fgSetStyle();
 
           drawBackground();
       }
@@ -185,15 +185,17 @@ function CentsGauge(containerID) {
         enumerable   : true
       , configurable : false
       , get : function () {
-          return _height;
+          return height;
       }
       , set : function (val) {
           height = val;
 
           fgCVS.height = height;
+          bgCVS.height = height;
           centerY      = height;
 
-          radius   = pradius < height - 10 ? pradius : height - 10;
+          bgSetStyle();
+          fgSetStyle();
 
           drawBackground();
       }
@@ -298,6 +300,8 @@ function CentsGauge(containerID) {
       }
       , set : function (value) {
           tunedColor = value;
+
+          drawBackground();
       }
     }
     , "notTunedColor" : {
@@ -308,6 +312,8 @@ function CentsGauge(containerID) {
       }
       , set : function (value) {
           notTunedColor = value;
+
+          drawBackground();
       }
     }
     , "noteFont" : {
@@ -330,6 +336,7 @@ function CentsGauge(containerID) {
       , set : function (val) {
           noteFontSize = val;
           noteFont     = fontStringPX(noteFontSize,noteFontName);
+          fgCTX.font   = noteFont;
         }
       , get : function () {
           return noteFontSize;
@@ -352,6 +359,7 @@ function CentsGauge(containerID) {
       , set : function (val) {
           noteFontName = val;
           noteFont     = fontStringPX(noteFontSize,noteFontName);
+          fgCTX.font   = noteFont;
       }
       , get : function () {
           return noteFontName;
@@ -438,6 +446,9 @@ function CentsGauge(containerID) {
   });
 
     document.getElementById(containerID).appendChild(viewElement);
+
+    bgSetStyle();
+    fgSetStyle();
     drawBackground();
 
 };
