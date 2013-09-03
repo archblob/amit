@@ -9,7 +9,7 @@ var Ring = (function () {
   IndexOutOfBounds.prototype.toString = function () {
     return "Invalid index in method ['" + this.method + "']\n" +
            "Requested index    : " + this.requestedIndex +
-           "\nValid _buffer index : [0.." + this.maxIndex + "]";
+           "\nValid buffer index : [0.." + this.maxIndex + "]";
   };
 
   function ImproperBlockLength(ringBlockLength, givenBlockLength) {
@@ -29,7 +29,8 @@ var Ring = (function () {
       , maxIndex    = length - 1
       , start       = 0
       , buffer      = new Float32Array(length)
-      , blockLength = 0;
+      , blockLength = 0
+      ;
 
     /* blockLength should always be a factor of size.
      * An exception is thrown if it's not;
@@ -46,13 +47,13 @@ var Ring = (function () {
 
     }
 
-    Object.defineProperties(this,{
+    Object.defineProperties(this, {
         "length" : {
             value        : length
           , enumerable   : true
           , configurable : false
           , writable     : false
-        }
+      }
       , "blockLength" : {
             value        : blockLength
           , enumerable   : true
@@ -67,27 +68,28 @@ var Ring = (function () {
               checkBounds(index, maxIndex, 'get');
 
               return buffer[relativeIndex(index, start, length)];
-            }
+          }
           , enumerable   : true
           , configurable : false
           , writable     : false
-        }
+      }
       , "set" : {
            value : function (index, value) {
 
              checkBounds(index, maxIndex, 'set');
 
              buffer[relativeIndex(index, start, length)] = value;
-           }
+          }
          , enumerable   : true
          , configurable : false
          , writable     : false
-        }
+      }
       , "concat" : {
             value : function (arr) {
 
               var alen = arr.length
-                , nlen = start + alen;
+                , nlen = start + alen
+                ;
 
               if (alen !== blockLength) {
                 throw new ImproperBlockLength(blockLength, alen);
@@ -100,17 +102,18 @@ var Ring = (function () {
               } else {
                   start = nlen;
               }
-            }
+          }
           , enumerable   : true
           , configurable : false
           , writable     : false
-        }
+      }
       , "map" : {
             value : function (callback) {
 
               var relIndex
                 , value
-                , i;
+                , i
+                ;
 
               for (i = 0; i < length; i += 1) {
                 relIndex = relativeIndex(i, start, length);
@@ -118,7 +121,7 @@ var Ring = (function () {
 
                 buffer[relIndex] = callback(value, i, length);
               }
-            }
+          }
           , enumerable   : true
           , configurable : false
           , writable     : false
