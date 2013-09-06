@@ -8,6 +8,7 @@ var viewElement   = document.createElement("div")
   , peek          = defaultPeek
   , audDiff       = 5 /* cents */
   , mxCents       = 50
+  , padding       = 10
   , twoPI         = 2 * Math.PI
   , width         = 360
   , height        = 180
@@ -38,7 +39,7 @@ var viewElement   = document.createElement("div")
   , freqFont      = fontStringPX(freqFontSize,freqFontName)
   ;
 
-function updateGaugeParameters(w,h) {
+function updateGaugeParameters(w, h) {
   radius        = calcRadius(w,h);
   circumference = twoPI * radius;
   quadrantArc   = circumference / 4;
@@ -52,8 +53,9 @@ function updateGaugeParameters(w,h) {
 }
 
 function calcRadius(w,h) {
-  var tw = w / 2 - 10;
-  var th = h - 10;
+  var tw = w / 2 - 10
+    , th = h - 10
+    ;
 
   return tw < th ? tw : th;
 }
@@ -214,6 +216,23 @@ function CentsGauge(containerID) {
           fgCVS.height = height;
           bgCVS.height = height;
           centerY      = height;
+
+          updateGaugeParameters(width, height);
+
+          bgSetStyle();
+          fgSetStyle();
+
+          drawBackground();
+      }
+    }
+    , "padding" : {
+        enumerable   : true
+      , configurable : false
+      , get : function () {
+          return width;
+      }
+      , set : function (val) {
+          padding = val;
 
           updateGaugeParameters(width, height);
 
