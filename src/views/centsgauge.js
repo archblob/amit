@@ -288,7 +288,7 @@ function CentsGauge(containerID) {
     , "peek" : {
         value        : peek
       , configurable : false
-      , enumerable   : true
+      , enumerable   : false
       , writable     : false
     }
     , "baseColor" : {
