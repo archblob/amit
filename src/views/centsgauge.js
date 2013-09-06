@@ -11,10 +11,9 @@ var viewElement   = document.createElement("div")
   , twoPI         = 2 * Math.PI
   , width         = 360
   , height        = 180
-  , pradius       = width / 2 - 20
   , centerX       = width / 2
   , centerY       = height
-  , radius        = pradius < height - 10 ? pradius : height - 10
+  , radius        = calcRadius(width, height)
   , circumference = twoPI * radius
   , quadrantArc   = circumference / 4
   , tickWidth     = 2
@@ -31,13 +30,33 @@ var viewElement   = document.createElement("div")
   , bgColor       = "white"
   , tunedColor    = "rgb(122,153,66)" /* green */
   , notTunedColor = "rgb(140,46,46)"  /* red */
-  , noteFontSize  = width / 8
-  , freqFontSize  = width / 16
+  , noteFontSize  = radius / 4
+  , freqFontSize  = radius / 8
   , noteFontName  = "sans-serif"
   , freqFontName  = "sans-serif"
   , noteFont      = fontStringPX(noteFontSize,noteFontName)
   , freqFont      = fontStringPX(freqFontSize,freqFontName)
   ;
+
+function updateGaugeParameters(w,h) {
+  radius        = calcRadius(w,h);
+  circumference = twoPI * radius;
+  quadrantArc   = circumference / 4;
+  maxTickWidth  = quadrantArc / mxCents;
+  unitStep      = quadrantArc / mxCents;
+
+  noteFontSize  = radius / 4;
+  freqFontSize  = radius / 8;
+  noteFont = fontStringPX(noteFontSize,noteFontName);
+  freqFont = fontStringPX(freqFontSize,freqFontName);
+}
+
+function calcRadius(w,h) {
+  var tw = w / 2 - 10;
+  var th = h - 10;
+
+  return tw < th ? tw : th;
+}
 
 /* FOREGROUND Canvas setup & properties */
 fgCVS.id = "gtunerViewFg";
@@ -175,6 +194,8 @@ function CentsGauge(containerID) {
 
           centerX  = width / 2;
 
+          updateGaugeParameters(width, height);
+
           bgSetStyle();
           fgSetStyle();
 
@@ -193,6 +214,8 @@ function CentsGauge(containerID) {
           fgCVS.height = height;
           bgCVS.height = height;
           centerY      = height;
+
+          updateGaugeParameters(width, height);
 
           bgSetStyle();
           fgSetStyle();
@@ -252,6 +275,12 @@ function CentsGauge(containerID) {
           circumference = twoPI * radius;
           quadrantArc   = circumference / 4;
           maxTickWidth  = quadrantArc / mxCents
+          unitStep      = quadrantArc / mxCents;
+
+          noteFontSize  = radius / 4;
+          freqFontSize  = radius / 8;
+          noteFont = fontStringPX(noteFontSize,noteFontName);
+          freqFont = fontStringPX(freqFontSize,freqFontName);
 
           drawBackground();
       }
