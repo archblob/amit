@@ -8,7 +8,7 @@ var viewElement   = document.createElement("div")
   , peek          = defaultPeek
   , audDiff       = 5 /* cents */
   , mxCents       = 50
-  , padding       = 10
+  , padding       = 20
   , twoPI         = 2 * Math.PI
   , width         = 360
   , height        = 180
@@ -53,8 +53,8 @@ function updateGaugeParameters(w, h) {
 }
 
 function calcRadius(w,h) {
-  var tw = w / 2 - 10
-    , th = h - 10
+  var tw = w / 2 - padding
+    , th = h - padding
     ;
 
   return tw < th ? tw : th;
@@ -91,6 +91,7 @@ function bgSetStyle() {
   bgCTX.fillStyle   = baseColor;
   bgCTX.strokeStyle = baseColor;
   bgCTX.lineWidth   = tickWidth;
+  bgCTX.textAlign   = "center";
 }
 /* BACKGROUND */
 
