@@ -17,7 +17,7 @@ var FrequencyMap = (function () {
 
       frequencyMap[i - 1] = {
         frequency : reference * Math.pow(trtwo, i - 49),
-        name      : notesDiez[(i + 8) % 12] + Math.floor((i + 8) / 12)
+        name      : notes[(i + 8) % 12] + Math.floor((i + 8) / 12)
       };
     }
 
