@@ -32,7 +32,7 @@ cvs.height = height;
 cvs.style.background = bgColor;
 
 ctx.fillStyle   = baseColor;
-ctx.strokeStyle = baseColor
+ctx.strokeStyle = baseColor;
 
 cvs.id = "gtunerView";
 

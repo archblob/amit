@@ -294,7 +294,7 @@ function CentsGauge(containerID) {
 
           circumference = twoPI * radius;
           quadrantArc   = circumference / 4;
-          maxTickWidth  = quadrantArc / mxCents
+          maxTickWidth  = quadrantArc / mxCents;
           unitStep      = quadrantArc / mxCents;
 
           noteFontSize  = radius / 4;
@@ -476,11 +476,11 @@ function CentsGauge(containerID) {
 
           if (element.peek) {
 
-          peek = element.peek;
+            peek = element.peek;
 
-          var tmpAnimStep = Math.abs(dCents - Math.abs(peek.cents)) / mxSteps;
+            var tmpAnimStep = Math.abs(dCents - Math.abs(peek.cents)) / mxSteps;
 
-          animStep = tmpAnimStep > 1 ? tmpAnimStep : 1 ;
+            animStep = tmpAnimStep > 1 ? tmpAnimStep : 1 ;
           }
 
           if (element.updateTime) {
