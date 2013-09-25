@@ -72,6 +72,22 @@ var Tuner = (function () {
               highpass.frequency = 35;
           }
         },
+        "newAudioContext" : {
+            enumerable   : false
+          , configurable : false
+          , writable     : false
+          , value : function () {
+              context = new AudioContext();
+          }
+        },
+        "resetAudioContext": {
+            enumerable   : false
+          , configurable : false
+          , writable     : false
+          , value : function() {
+              context = null;
+          }
+        },
         "samplerate" : {
             value        : _samplerate
           , enumerable   : true
@@ -209,11 +225,11 @@ var Tuner = (function () {
               }
 
               processor.onaudioprocess = function (event) {
-              var input = event.inputBuffer.getChannelData(0);
+                var input = event.inputBuffer.getChannelData(0);
 
-              samples.concat(input);
+                samples.concat(input);
 
-              event.outputBuffer.getChannelData(0).set(input);
+                event.outputBuffer.getChannelData(0).set(input);
               };
 
               source.connect(lowpass);
