@@ -23,15 +23,15 @@ function isInteger(n) {
 }
 
 function checkNat(callerName, n) {
-
-  if (isInteger) {
-    if (value <= 0) {
-      throw new RangeError("downsampleFactor must be positive." +
-                           "given number is not: " + value);
-    }
-  } else {
+  
+  if (!isInteger) {
     throw new TypeError("downsampleFactor accepts an integer but" +
                         "given type is " + typeof value);
+  }
+
+  if (value <= 0) {
+    throw new RangeError("downsampleFactor must be positive." +
+                         "given number is not: " + value);
   }
 
 }
