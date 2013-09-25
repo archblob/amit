@@ -15,6 +15,7 @@ var Tuner = (function () {
       , _effectiveSamplerate = _samplerate / _downsampleFactor
       , _frequencyResolution = _effectiveSamplerate / _fftSize
       , _bufferSize          = _fftSize * _downsampleFactor
+      /* measured in seconds here */
       , _temporalWindow      = _bufferSize / _samplerate
       , _harmonics           = 5
       , _maxHarmFrequency    = _fftSize / _harmonics * _frequencyResolution
@@ -23,6 +24,10 @@ var Tuner = (function () {
       , _windowFunction      = new WindowObject("Hann", _bufferSize)
       , _frequencyMap        = new FrequencyMap()
       , _viewCallback
+      , requestDataType = { peek       : false
+                          , spectrum   : false
+                          , updateTime : false
+                          }
       ;
 
     var source
@@ -37,6 +42,7 @@ var Tuner = (function () {
         , spectrum
         , peek
         , i
+        , respondData = {}
         ;
 
       _windowFunction.process(samples);
@@ -50,10 +56,15 @@ var Tuner = (function () {
       spectrum = fft.spectrum;
       peek     = HPS(spectrum,_harmonics);
 
-      _viewCallback({
-        peek : _frequencyMap.closestNote(peek * _frequencyResolution),
-        spectrum : spectrum
-      });
+      if (requestDataType.peek) {
+        respondData.peek = _frequencyMap.closestNote(peek * _frequencyResolution);
+      }
+
+      if (requestDataType.peek) {
+        respondData.spectrum = spectrum;
+      }
+
+      _viewCallback(respondData);
     }
 
     Object.defineProperties(this, {
@@ -100,9 +111,17 @@ var Tuner = (function () {
           , set : function (clbk) {
             _viewCallback = clbk;
 
-            _viewCallback({ updateTime : _temporalWindow });
+            if (requestDataType.updateTime) {
+              _viewCallback({ updateTime : _temporalWindow });
+            }
           }
         }
+      , "requestDataType" : {
+            enumerable   : true
+          , configurable : false
+          , writable     : true
+          , value        : requestDataType
+      }
       , "downsampleFactor" : {
             enumerable   : true
           , configurable : false
@@ -128,7 +147,9 @@ var Tuner = (function () {
 
               _windowFunction.length = _bufferSize;
 
-              _viewCallback({ updateTime : _temporalWindow });
+              if (requestDataType.updateTime) {
+                _viewCallback({ updateTime : _temporalWindow });
+              }
             }
         }
       , "fftSize" : {
@@ -151,14 +172,16 @@ var Tuner = (function () {
 
               _windowFunction.length = _bufferSize;
 
-              _viewCallback({ updateTime : _temporalWindow });
+              if (requestDataType.updateTime) {
+                _viewCallback({ updateTime : _temporalWindow });
+              }
             }
         }
       , "effectiveSamplerate" : {
             enumerable   : true
           , configurable : false
           , get : function () {
-            return _effectiveSamplerate;
+              return _effectiveSamplerate;
             }
         }
       , "frequencyResolution" : {

@@ -6,6 +6,7 @@ var viewElement   = document.createElement("div")
   , fgCTX         = fgCVS.getContext("2d")
   , bgCTX         = bgCVS.getContext("2d")
   , peek          = defaultPeek
+  , requestType   = { peek : true, spectrum : false, updateTime : true}
   , audDiff       = 5 /* cents */
   , mxCents       = 50
   , padding       = 20
@@ -309,6 +310,12 @@ function CentsGauge(containerID) {
         value        : peek
       , configurable : false
       , enumerable   : false
+      , writable     : false
+    }
+    , "requestType" : {
+        value        : requestType
+      , configurable : false
+      , enumerable   : true
       , writable     : false
     }
     , "baseColor" : {
