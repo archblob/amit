@@ -3,6 +3,7 @@
 var cvs              = document.createElement("canvas")
   , ctx              = cvs.getContext("2d")
   , peek             = defaultPeek
+  , requestType      = { peek : true, spectrum : false, updateTime : false}
   , width            = 400
   , height           = 200
   , xpad             = 10
@@ -160,6 +161,12 @@ function SimpleView(containerID) {
         value        : peek
       , configurable : false
       , enumerable   : false
+      , writable     : false
+    }
+    , "requestType" : {
+        value        : requestType
+      , configurable : false
+      , enumerable   : true
       , writable     : false
     }
     , "baseColor" : {
