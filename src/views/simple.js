@@ -31,8 +31,14 @@ cvs.width  = width;
 cvs.height = height;
 cvs.style.background = bgColor;
 
-ctx.fillStyle   = baseColor;
-ctx.strokeStyle = baseColor;
+function ctxStyleSetup() {
+
+  ctx.fillStyle   = baseColor;
+  ctx.strokeStyle = baseColor;
+
+}
+
+ctxStyleSetup();
 
 cvs.id = "gtunerView";
 
@@ -92,7 +98,6 @@ function drawSeparator(x0, y0, x1, y1) {
   ctx.moveTo(x0, y0);
   ctx.lineTo(x1, y1);
 
-  ctx.strokeStyle = baseColor;
   ctx.lineCap     = "round";
 
   ctx.stroke();
@@ -127,6 +132,7 @@ function SimpleView(containerID) {
 
           noteFontMaxWidth = cx - xpad;
           verticalSepX     = cx + xpad;
+          ctxStyleSetup();
       }
     }
     , "height" : {
@@ -146,6 +152,8 @@ function SimpleView(containerID) {
 
           noteFontSize = 0.6 * height;
           freqFontSize = 0.2 * height;
+
+          ctxStyleSetup();
         }
     }
     , "peek" : {
@@ -163,8 +171,7 @@ function SimpleView(containerID) {
       , set : function (value) {
           baseColor = value;
 
-          ctx.fillStyle   = baseColor;
-          ctx.strokeStyle = baseColor;
+          ctxStyleSetup();
       }
     }
     , "bgColor" : {
