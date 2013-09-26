@@ -9,10 +9,10 @@ var viewElement   = document.createElement("div")
   , requestType   = { peek : true, spectrum : false, updateTime : true}
   , audDiff       = 5 /* cents */
   , mxCents       = 50
-  , padding       = 20
+  , padding       = 40
   , twoPI         = 2 * Math.PI
-  , width         = 360
-  , height        = 180
+  , width         = 800
+  , height        = 260
   , centerX       = width / 2
   , centerY       = height
   , radius        = calcRadius(width, height)
@@ -89,10 +89,12 @@ bgCVS.style.zIndex   = 0;
 bgCVS.style.background = bgColor;
 
 function bgSetStyle() {
-  bgCTX.fillStyle   = baseColor;
-  bgCTX.strokeStyle = baseColor;
-  bgCTX.lineWidth   = tickWidth;
-  bgCTX.textAlign   = "center";
+  bgCTX.fillStyle    = baseColor;
+  bgCTX.strokeStyle  = baseColor;
+  bgCTX.lineWidth    = tickWidth;
+  bgCTX.textAlign    = "center";
+  bgCTX.font         = "14px sans-serif";
+  bgCTX.textBaseline = "bottom";
 }
 /* BACKGROUND */
 
@@ -115,6 +117,13 @@ function drawTicks(from, to, color, arc) {
     , xc1
     , yc0
     , yc1
+    , textX0
+    , textX1
+    , textY
+    , textYC
+    , textXC
+    , maxRad
+    , charOffset
     , unitTickLength = tickLength / 3
     , halfTickLength = tickLength / 1.5
     , sTickLength    = currentTickLength / 2
@@ -134,13 +143,30 @@ function drawTicks(from, to, color, arc) {
     }
 
     alfa = arc / radius;
-
     sTickLength = currentTickLength / 2;
+    maxRad = radius + sTickLength
 
     xc0 = (radius + sTickLength) * Math.cos(alfa);
     xc1 = (radius - sTickLength) * Math.cos(alfa);
     yc0 = (radius + sTickLength) * Math.sin(alfa);
     yc1 = (radius - sTickLength) * Math.sin(alfa);
+
+    charOffset = bgCTX.measureText(from - mxCents).width / 2;
+
+    textXC = (maxRad + charOffset) * Math.cos(alfa);
+    textYC = (maxRad + charOffset) * Math.sin(alfa)
+
+    textX0 = centerX + textXC;
+    textX1 = centerX - textXC;
+
+    textY  = centerY - textYC;
+
+    if (from % markStep == 0) {
+      if (from != 50) {
+        bgCTX.fillText("+" + (-1 * (from - mxCents)), textX0, textY);
+      }
+      bgCTX.fillText(from - mxCents, textX1, textY);
+    }
 
     y0 = centerY - yc0;
     y1 = centerY - yc1;
@@ -148,8 +174,12 @@ function drawTicks(from, to, color, arc) {
     bgCTX.moveTo(centerX - xc0, y0);
     bgCTX.lineTo(centerX - xc1, y1);
 
-    bgCTX.moveTo(centerX + xc0, y0);
-    bgCTX.lineTo(centerX + xc1, y1);
+    /* Hack to draw 0 only once. */
+    /* TODO fix this hack */
+    if (from != 50) {
+      bgCTX.moveTo(centerX + xc0, y0);
+      bgCTX.lineTo(centerX + xc1, y1);
+    }
 
     arc  -= unitStep;
     from -= 1;
