@@ -60,7 +60,7 @@ var Tuner = (function () {
         respondData.peek = _frequencyMap.closestNote(peek * _frequencyResolution);
       }
 
-      if (requestDataType.peek) {
+      if (requestDataType.spectrum) {
         respondData.spectrum = spectrum;
       }
 
