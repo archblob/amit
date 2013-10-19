@@ -209,8 +209,8 @@ var Tuner = (function () {
               if (freqMap.hasOwnProperty("closestNote")) {
                 _frequencyMap   = freqMap;
               } else {
-                throw new TypeError("Passed object has to have " +
-                                    "a method named closestNote");
+                throw new TypeError("Passed object has to " +
+                                    "implement method closestNote");
               }
             }
         }
