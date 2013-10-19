@@ -2,7 +2,7 @@ LIB_DIR   = src/lib/
 TUNER_DIR = src/tuner/
 VIEWS_DIR = src/views/
 
-BUILD_DIR = build/
+BUILD_DIR = src/build/
 DIST_DIR  = $(BUILD_DIR)dist/
 
 MINIFIER       = yui-compressor
