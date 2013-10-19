@@ -119,8 +119,12 @@ var Tuner = (function () {
       , "requestDataType" : {
             enumerable   : true
           , configurable : false
-          , writable     : true
-          , value        : requestDataType
+          , set : function (rdata){
+              requestDataType = rdata;
+          }
+          , get : function () {
+              return requestDataType;
+          }
       }
       , "downsampleFactor" : {
             enumerable   : true
