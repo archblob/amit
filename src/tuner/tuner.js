@@ -253,6 +253,23 @@ function Tuner() {
         , configurable : false
         , writable     : false
     }
+    , "pause" : {
+        value : function () {
+
+          if (startID) {
+            window.clearInterval(startID);
+
+            source.disconnect(0);
+            lowpass.disconnect(0);
+            highpass.disconnect(0);
+            processor.disconnect(0);
+          } 
+
+        }
+      , enumerable   : false
+      , configurable : false
+      , writable     : false
+    }
   });
 
 }
