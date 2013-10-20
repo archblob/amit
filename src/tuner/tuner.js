@@ -20,6 +20,7 @@ function Tuner() {
     , samples             = new Ring(bufferSize, 512)
     , windowFunction      = new WindowObject("Hann", bufferSize)
     , frequencyMap        = new FrequencyMap()
+    , runID
     , viewCallback
     , requestDataType = { peek       : false
                         , spectrum   : false
@@ -245,8 +246,8 @@ function Tuner() {
             highpass.connect(processor);
             processor.connect(context.destination);
 
-            return window.setInterval(fundamental
-                                     , temporalWindow.toFixed(3) * 1000);
+            runID = window.setInterval( fundamental
+                                      , temporalWindow.toFixed(3) * 1000);
         }
         , enumerable   : false
         , configurable : false
