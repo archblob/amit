@@ -1,0 +1,13 @@
+#Test files
+*.html
+
+#Eclipse
+.externalToolBuilders/
+.project
+.settings/
+
+#Make
+src/build
+
+#Jekyll
+_site/
