@@ -20,7 +20,7 @@ function Tuner() {
     , samples             = new Ring(bufferSize, 512)
     , windowFunction      = new WindowObject("Hann", bufferSize)
     , frequencyMap        = new FrequencyMap()
-    , runID
+    , startID
     , viewCallback
     , requestDataType = { peek       : false
                         , spectrum   : false
@@ -222,7 +222,7 @@ function Tuner() {
             return maxHarmFrequency;
         }
     }
-    , "run" : {
+    , "start" : {
           value : function () {
 
             if (!source) {
@@ -246,8 +246,8 @@ function Tuner() {
             highpass.connect(processor);
             processor.connect(context.destination);
 
-            runID = window.setInterval( fundamental
-                                      , temporalWindow.toFixed(3) * 1000);
+            startID = window.setInterval( fundamental
+                                        , temporalWindow.toFixed(3) * 1000);
         }
         , enumerable   : false
         , configurable : false
