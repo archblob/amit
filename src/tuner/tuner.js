@@ -81,22 +81,6 @@ function Tuner() {
             highpass.frequency = 35;
         }
       },
-      "newAudioContext" : {
-          enumerable   : false
-        , configurable : false
-        , writable     : false
-        , value : function () {
-            context = new AudioContext();
-        }
-      },
-      "resetAudioContext": {
-          enumerable   : false
-        , configurable : false
-        , writable     : false
-        , value : function() {
-            context = null;
-        }
-      },
       "samplerate" : {
           value        : _samplerate
         , enumerable   : true
