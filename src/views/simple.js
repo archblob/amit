@@ -26,6 +26,7 @@ var cvs              = document.createElement("canvas")
   , freqFontName     = "sans-serif"
   , noteFont         = fontStringPX(noteFontSize,noteFontName)
   , freqFont         = fontStringPX(freqFontSize,freqFontName)
+  , startID
   ;
 
 cvs.width  = width;
@@ -271,7 +272,7 @@ function SimpleView(containerID) {
           return freqFontName;
       }
     }
-    , "run" : {
+    , "start" : {
         value : function () {
 
           var cents   = peek.cents
@@ -285,7 +286,7 @@ function SimpleView(containerID) {
           drawFrequency();
           drawNoteName();
 
-          window.requestAnimationFrame(this.run.bind(this));
+          startID = window.requestAnimationFrame(this.run.bind(this));
        }
       , enumerable   : false
       , configurable : false
@@ -293,10 +294,14 @@ function SimpleView(containerID) {
     }
     , "update" : {
         value : function (element) {
+          
+          if(!startID){
+            throw new ReferenceError("Start the view before calling update.");
+          }
           if (element.peek) {
             peek = element.peek;
           }
-      }
+       }
       , enumerable   : false
       , configurable : false
       , writable     : false

@@ -38,6 +38,7 @@ var viewElement   = document.createElement("div")
   , freqFontName  = "sans-serif"
   , noteFont      = fontStringPX(noteFontSize,noteFontName)
   , freqFont      = fontStringPX(freqFontSize,freqFontName)
+  , startID
   ;
 
 function updateGaugeParameters(w, h) {
@@ -462,7 +463,7 @@ function CentsGauge(containerID) {
           return freqFontName;
       }
     }
-    , "run" : {
+    , "start" : {
         value : function() {
 
           var arc  = quadrantArc - (dCents * quadrantArc / mxCents)
@@ -502,7 +503,8 @@ function CentsGauge(containerID) {
               dCents = peek.cents;
             }
           }
-          window.requestAnimationFrame(this.run.bind(this));
+
+          startID = window.requestAnimationFrame(this.run.bind(this));
       }
       , enumerable   : false
       , configurable : false
@@ -510,6 +512,10 @@ function CentsGauge(containerID) {
     }
     , "update" : {
         value : function (element) {
+
+          if(!startID){
+            throw new ReferenceError("Start the view before calling update.");
+          }
 
           if (element.peek) {
 
