@@ -145,7 +145,7 @@ function drawTicks(from, to, color, arc) {
 
     alfa = arc / radius;
     sTickLength = currentTickLength / 2;
-    maxRad = radius + sTickLength
+    maxRad = radius + sTickLength;
 
     xc0 = (radius + sTickLength) * Math.cos(alfa);
     xc1 = (radius - sTickLength) * Math.cos(alfa);
@@ -155,7 +155,7 @@ function drawTicks(from, to, color, arc) {
     charOffset = bgCTX.measureText(from - mxCents).width / 2;
 
     textXC = (maxRad + charOffset) * Math.cos(alfa);
-    textYC = (maxRad + charOffset) * Math.sin(alfa)
+    textYC = (maxRad + charOffset) * Math.sin(alfa);
 
     textX0 = centerX + textXC;
     textX1 = centerX - textXC;
