@@ -30,15 +30,15 @@ var WindowObject = (function () {
 
   function WindowFunction(tp, len) {
 
-    var _type          = tp
-      , _length        = len
-      , values         = new Float32Array(_length)
-      , windowFunction = selectWindowFunctionType(_type)
+    var type           = tp
+      , length         = len
+      , values         = new Float32Array(length)
+      , windowFunction = selectWindowFunctionType(type)
       , i
       ;
 
-    for (i = 0; i < _length; i += 1) {
-      values[i] = windowFunction(i, _length);
+    for (i = 0; i < length; i += 1) {
+      values[i] = windowFunction(i, length);
     }
 
     Object.defineProperties(this, {
@@ -47,22 +47,22 @@ var WindowObject = (function () {
           , configurable : false
           , get : function () {
 
-              if (!_type) {
+              if (!type) {
                 throw new PropertyNotInitialized("WindowFunction", "type");
               }
 
-              return _type;
+              return type;
           }
           , set : function (tp) {
 
               var i;
 
-              _type = tp;
+              type = tp;
               windowFunction = selectWindowFunctionType(tp);
 
-              if (_length) {
-                for (i = 0; i < _length; i += 1) {
-                  values[i] = windowFunction(i, _length);
+              if (length) {
+                for (i = 0; i < length; i += 1) {
+                  values[i] = windowFunction(i, length);
                 }
               } else {
                 throw new PropertyNotInitialized("WindowFunction", "length");
@@ -74,22 +74,22 @@ var WindowObject = (function () {
           , configurable : false
           , get : function () {
 
-              if (!_length) {
+              if (!length) {
                 throw new PropertyNotInitialized("WindowFunction", "length");
               }
 
-              return _length;
+              return length;
             }
           , set : function (value) {
 
               var i;
 
-              _length = value;
-              values  = new Float32Array(_length);
+              length = value;
+              values = new Float32Array(length);
 
-              if (_type) {
-                for (i = 0; i < _length; i += 1) {
-                  values[i] = windowFunction(i, _length);
+              if (type) {
+                for (i = 0; i < length; i += 1) {
+                  values[i] = windowFunction(i, length);
                 }
               } else {
                 throw new PropertyNotInitialized("WindowFunction", "type");
@@ -101,18 +101,18 @@ var WindowObject = (function () {
     Object.defineProperty(WindowFunction.prototype, "process", {
         value : function (buffer) {
 
-          if (!_length) {
+          if (!length) {
             throw new PropertyNotInitialized("WindowFunction", "length");
           }
 
-          if (!_type) {
+          if (!type) {
             throw new PropertyNotInitialized("WindowFunction", "type");
           }
 
-          if (buffer.length !== _length) {
+          if (buffer.length !== length) {
             throw new TypeError("Given buffer is not the same length as" +
                                 " the length property of WindowFunction." +
-                                "\nExpected : " + _length +
+                                "\nExpected : " + length +
                                 "\nGiven    : " + buffer.length
                                 );
           }
