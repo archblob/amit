@@ -504,7 +504,7 @@ function CentsGauge(containerID) {
             }
           }
 
-          startID = window.requestAnimationFrame(this.run.bind(this));
+          startID = window.requestAnimationFrame(this.start.bind(this));
       }
       , enumerable   : false
       , configurable : false
