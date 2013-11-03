@@ -3,7 +3,7 @@ amit
 
 A musical instrument tuner using the Web Audio API.
 
-For a live demo and project documentation see [amit](http://archblob.github.io/guitar-tuner/) on GitHub Pages.
+For a live demo and project documentation see [amit](http://archblob.github.io/amit/) on GitHub Pages.
 
 License (MIT)
 --------------
