@@ -1,9 +1,9 @@
-guitar-tuner
+amit
 ========
 
-Guitar tuner using the Web Audio API.
+A musical instrument tuner using the Web Audio API.
 
-For a live demo and project documentation go to [guitar-tuner](http://archblob.github.io/guitar-tuner/) GitHub Pages.
+For a live demo and project documentation see [amit](http://archblob.github.io/guitar-tuner/) on GitHub Pages.
 
 License (MIT)
 --------------
