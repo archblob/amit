@@ -81,7 +81,7 @@ function CentsGauge() {
     bgCTX.strokeStyle  = baseColor;
     bgCTX.lineWidth    = tickWidth;
     bgCTX.textAlign    = "center";
-    bgCTX.font         = "14px sans-serif";
+    bgCTX.font         = 0.05 * Math.min(width,height) + "px sans-serif";
     bgCTX.textBaseline = "bottom";
   }
 
