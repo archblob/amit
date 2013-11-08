@@ -1,6 +1,13 @@
-(function (global) {
+function CentsGauge(containerID) {
 
-var viewElement   = document.createElement("div")
+  if (CentsGauge.prototype.instance) {
+    console.log("An instance of CentsGauge already exists.");
+    return CentsGauge.prototype.instance;
+  }
+
+  CentsGauge.prototype.instance = this;
+
+  var viewElement   = document.createElement("div")
   , fgCVS         = document.createElement("canvas")
   , bgCVS         = document.createElement("canvas")
   , fgCTX         = fgCVS.getContext("2d")
@@ -41,75 +48,75 @@ var viewElement   = document.createElement("div")
   , startID
   ;
 
-function updateGaugeParameters(w, h) {
-  radius        = calcRadius(w,h);
-  circumference = twoPI * radius;
-  quadrantArc   = circumference / 4;
-  maxTickWidth  = quadrantArc / mxCents;
-  unitStep      = quadrantArc / mxCents;
+  function updateGaugeParameters(w, h) {
+    radius        = calcRadius(w,h);
+    circumference = twoPI * radius;
+    quadrantArc   = circumference / 4;
+    maxTickWidth  = quadrantArc / mxCents;
+    unitStep      = quadrantArc / mxCents;
 
-  noteFontSize  = radius / 4;
-  freqFontSize  = radius / 8;
-  noteFont = fontStringPX(noteFontSize,noteFontName);
-  freqFont = fontStringPX(freqFontSize,freqFontName);
-}
+    noteFontSize  = radius / 4;
+    freqFontSize  = radius / 8;
+    noteFont = fontStringPX(noteFontSize,noteFontName);
+    freqFont = fontStringPX(freqFontSize,freqFontName);
+  }
 
-function calcRadius(w,h) {
-  var tw = w / 2 - padding
+  function calcRadius(w,h) {
+    var tw = w / 2 - padding
     , th = h - padding
     ;
 
-  return tw < th ? tw : th;
-}
+    return tw < th ? tw : th;
+  }
 
-/* FOREGROUND Canvas setup & properties */
-fgCVS.id = "gtunerViewFg";
+  /* FOREGROUND Canvas setup & properties */
+  fgCVS.id = "gtunerViewFg";
 
-fgCVS.width  = width;
-fgCVS.height = height;
+  fgCVS.width  = width;
+  fgCVS.height = height;
 
-fgCVS.style.position = "absolute";
-fgCVS.style.zIndex   = 1;
+  fgCVS.style.position = "absolute";
+  fgCVS.style.zIndex   = 1;
 
-function fgSetStyle() {
-  fgCTX.textAlign   = "center";
-  fgCTX.fillStyle   = baseColor;
-  fgCTX.strokeStyle = baseColor;
-  fgCTX.font        = noteFont;
-}
-/* FOREGROUND */
+  function fgSetStyle() {
+    fgCTX.textAlign   = "center";
+    fgCTX.fillStyle   = baseColor;
+    fgCTX.strokeStyle = baseColor;
+    fgCTX.font        = noteFont;
+  }
+  /* FOREGROUND */
 
-/* BACKGROUND Canvas setup & properties */
-bgCVS.id = "gtunerViewBg";
+  /* BACKGROUND Canvas setup & properties */
+  bgCVS.id = "gtunerViewBg";
 
-bgCVS.width  = width;
-bgCVS.height = height;
+  bgCVS.width  = width;
+  bgCVS.height = height;
 
-bgCVS.style.position = "absolute";
-bgCVS.style.zIndex   = 0;
-bgCVS.style.background = bgColor;
+  bgCVS.style.position = "absolute";
+  bgCVS.style.zIndex   = 0;
+  bgCVS.style.background = bgColor;
 
-function bgSetStyle() {
-  bgCTX.fillStyle    = baseColor;
-  bgCTX.strokeStyle  = baseColor;
-  bgCTX.lineWidth    = tickWidth;
-  bgCTX.textAlign    = "center";
-  bgCTX.font         = "14px sans-serif";
-  bgCTX.textBaseline = "bottom";
-}
-/* BACKGROUND */
+  function bgSetStyle() {
+    bgCTX.fillStyle    = baseColor;
+    bgCTX.strokeStyle  = baseColor;
+    bgCTX.lineWidth    = tickWidth;
+    bgCTX.textAlign    = "center";
+    bgCTX.font         = "14px sans-serif";
+    bgCTX.textBaseline = "bottom";
+  }
+  /* BACKGROUND */
 
-/* Wrap background and foreground elements for easier manipulation */
-viewElement.id = "gtunerView";
+  /* Wrap background and foreground elements for easier manipulation */
+  viewElement.id = "gtunerView";
 
-viewElement.appendChild(bgCVS);
-viewElement.appendChild(fgCVS);
+  viewElement.appendChild(bgCVS);
+  viewElement.appendChild(fgCVS);
 
-function drawTicks(from, to, color, arc) {
+  function drawTicks(from, to, color, arc) {
 
-  /* The thick at zero is painted two times, this will affect the color. */
+    /* The thick at zero is painted two times, this will affect the color. */
 
-  var halfMark = markStep / 2
+    var halfMark = markStep / 2
     , currentTickLength = tickLength
     , alfa
     , y0
@@ -130,89 +137,80 @@ function drawTicks(from, to, color, arc) {
     , sTickLength    = currentTickLength / 2
     ;
 
-  bgCTX.beginPath();
-  bgCTX.strokeStyle = color;
+    bgCTX.beginPath();
+    bgCTX.strokeStyle = color;
 
-  while (from >= to) {
+    while (from >= to) {
 
-    if (from % markStep == 0) {
-      currentTickLength = tickLength;
-    } else if (from % halfMark == 0) {
-      currentTickLength = halfTickLength;
-    } else {
-      currentTickLength = unitTickLength;
-    }
-
-    alfa = arc / radius;
-    sTickLength = currentTickLength / 2;
-    maxRad = radius + sTickLength;
-
-    xc0 = (radius + sTickLength) * Math.cos(alfa);
-    xc1 = (radius - sTickLength) * Math.cos(alfa);
-    yc0 = (radius + sTickLength) * Math.sin(alfa);
-    yc1 = (radius - sTickLength) * Math.sin(alfa);
-
-    charOffset = bgCTX.measureText(from - mxCents).width / 2;
-
-    textXC = (maxRad + charOffset) * Math.cos(alfa);
-    textYC = (maxRad + charOffset) * Math.sin(alfa);
-
-    textX0 = centerX + textXC;
-    textX1 = centerX - textXC;
-
-    textY  = centerY - textYC;
-
-    if (from % markStep == 0) {
-      if (from != 50) {
-        bgCTX.fillText("+" + (-1 * (from - mxCents)), textX0, textY);
+      if (from % markStep == 0) {
+        currentTickLength = tickLength;
+      } else if (from % halfMark == 0) {
+        currentTickLength = halfTickLength;
+      } else {
+        currentTickLength = unitTickLength;
       }
-      bgCTX.fillText(from - mxCents, textX1, textY);
+
+      alfa = arc / radius;
+      sTickLength = currentTickLength / 2;
+      maxRad = radius + sTickLength;
+
+      xc0 = (radius + sTickLength) * Math.cos(alfa);
+      xc1 = (radius - sTickLength) * Math.cos(alfa);
+      yc0 = (radius + sTickLength) * Math.sin(alfa);
+      yc1 = (radius - sTickLength) * Math.sin(alfa);
+
+      charOffset = bgCTX.measureText(from - mxCents).width / 2;
+
+      textXC = (maxRad + charOffset) * Math.cos(alfa);
+      textYC = (maxRad + charOffset) * Math.sin(alfa);
+
+      textX0 = centerX + textXC;
+      textX1 = centerX - textXC;
+
+      textY  = centerY - textYC;
+
+      if (from % markStep == 0) {
+        if (from != 50) {
+          bgCTX.fillText("+" + (-1 * (from - mxCents)), textX0, textY);
+        }
+        bgCTX.fillText(from - mxCents, textX1, textY);
+      }
+
+      y0 = centerY - yc0;
+      y1 = centerY - yc1;
+
+      bgCTX.moveTo(centerX - xc0, y0);
+      bgCTX.lineTo(centerX - xc1, y1);
+
+      /* Hack to draw 0 only once. */
+      /* TODO fix this hack */
+      if (from != 50) {
+        bgCTX.moveTo(centerX + xc0, y0);
+        bgCTX.lineTo(centerX + xc1, y1);
+      }
+
+      arc  -= unitStep;
+      from -= 1;
     }
 
-    y0 = centerY - yc0;
-    y1 = centerY - yc1;
-
-    bgCTX.moveTo(centerX - xc0, y0);
-    bgCTX.lineTo(centerX - xc1, y1);
-
-    /* Hack to draw 0 only once. */
-    /* TODO fix this hack */
-    if (from != 50) {
-      bgCTX.moveTo(centerX + xc0, y0);
-      bgCTX.lineTo(centerX + xc1, y1);
-    }
-
-    arc  -= unitStep;
-    from -= 1;
+    bgCTX.stroke();
+    return arc;
   }
 
-  bgCTX.stroke();
-  return arc;
-}
+  function drawBackground() {
 
-function drawBackground() {
+    var arc = quadrantArc;
 
-  var arc = quadrantArc;
+    bgCTX.clearRect(0,0,bgCVS.width,bgCVS.height);
 
-  bgCTX.clearRect(0,0,bgCVS.width,bgCVS.height);
+    bgCTX.beginPath();
+    bgCTX.arc(centerX,centerY,10,0,twoPI,false);
+    bgCTX.fill();
 
-  bgCTX.beginPath();
-  bgCTX.arc(centerX,centerY,10,0,twoPI,false);
-  bgCTX.fill();
+    arc = drawTicks(mxCents, mxCents - audDiff, tunedColor, arc);
+    drawTicks(mxCents - audDiff - 1,0, notTunedColor, arc);
 
-  arc = drawTicks(mxCents, mxCents - audDiff, tunedColor, arc);
-  drawTicks(mxCents - audDiff - 1,0, notTunedColor, arc);
-
-}
-
-function CentsGauge(containerID) {
-
-  if (CentsGauge.prototype.instance) {
-    console.log("An instance of CentsGauge already exists.");
-    return CentsGauge.prototype.instance;
   }
-
-  CentsGauge.prototype.instance = this;
 
   Object.defineProperties(this, {
     "width" : {
@@ -545,6 +543,3 @@ function CentsGauge(containerID) {
 
 };
 
-  global.CentsGauge = CentsGauge;
-
-}(window));

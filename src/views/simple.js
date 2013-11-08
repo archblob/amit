@@ -1,6 +1,13 @@
-(function (global) {
+function SimpleView(containerID) {
 
-var cvs              = document.createElement("canvas")
+  if (SimpleView.prototype.instance) {
+    console.log("An instance of SimpleView already exists.");
+    return SimpleView.prototype.instance;
+  }
+
+  SimpleView.prototype.instance = this;
+
+  var cvs            = document.createElement("canvas")
   , ctx              = cvs.getContext("2d")
   , peek             = defaultPeek
   , requestType      = { peek : true, spectrum : false, updateTime : false}
@@ -29,92 +36,83 @@ var cvs              = document.createElement("canvas")
   , startID
   ;
 
-cvs.width  = width;
-cvs.height = height;
-cvs.style.background = bgColor;
+  cvs.width  = width;
+  cvs.height = height;
+  cvs.style.background = bgColor;
 
-function ctxStyleSetup() {
+  function ctxStyleSetup() {
 
-  ctx.fillStyle   = baseColor;
-  ctx.strokeStyle = baseColor;
+    ctx.fillStyle   = baseColor;
+    ctx.strokeStyle = baseColor;
 
-}
+  }
 
-ctxStyleSetup();
+  ctxStyleSetup();
 
-cvs.id = "gtunerView";
+  cvs.id = "gtunerView";
 
-function drawArrow(direction) {
+  function drawArrow(direction) {
 
-  var y = cy + (freqFontSize / 2 * direction)
+    var y = cy + (freqFontSize / 2 * direction)
     , dir    = semiMinorAxis * direction
     , rpoint = y + (dir / 2)
     ;
 
-  ctx.beginPath();
+    ctx.beginPath();
 
-  ctx.moveTo(x - semiMajorAxis,y);
-  ctx.lineTo(x,y + dir);
-  ctx.lineTo(x + semiMajorAxis, y);
-  ctx.bezierCurveTo(x, rpoint, x, rpoint, x - semiMajorAxis, y);
+    ctx.moveTo(x - semiMajorAxis,y);
+    ctx.lineTo(x,y + dir);
+    ctx.lineTo(x + semiMajorAxis, y);
+    ctx.bezierCurveTo(x, rpoint, x, rpoint, x - semiMajorAxis, y);
 
-  ctx.fill();
-}
-
-function drawNoteName() {
-
-  ctx.save();
-
-  ctx.textAlign    = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.font         = noteFont;
-
-  ctx.fillText(peek.note.name, xpad, cy, noteFontMaxWidth);
-
-  ctx.restore();
-}
-
-function drawFrequency() {
-
-  var cents = Math.abs(peek.cents);
-
-  ctx.save();
-
-  ctx.fillStyle = cents - 5 <= 5 ? tunedColor : notTunedColor;
-
-  ctx.textAlign    = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font         = freqFont;
-
-  ctx.fillText(peek.frequency.toFixed(2), x, cy);
-
-  ctx.restore();
-}
-
-function drawSeparator(x0, y0, x1, y1) {
-
-  ctx.save();
-
-  ctx.beginPath();
-
-  ctx.moveTo(x0, y0);
-  ctx.lineTo(x1, y1);
-
-  ctx.lineCap     = "round";
-
-  ctx.stroke();
-
-  ctx.restore();
-}
-
-function SimpleView(containerID) {
-
-  if (SimpleView.prototype.instance) {
-    console.log("An instance of SimpleView already exists.");
-    return SimpleView.prototype.instance;
+    ctx.fill();
   }
 
-  SimpleView.prototype.instance = this;
+  function drawNoteName() {
+
+    ctx.save();
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.font         = noteFont;
+
+    ctx.fillText(peek.note.name, xpad, cy, noteFontMaxWidth);
+
+    ctx.restore();
+  }
+
+  function drawFrequency() {
+
+    var cents = Math.abs(peek.cents);
+
+    ctx.save();
+
+    ctx.fillStyle = cents - 5 <= 5 ? tunedColor : notTunedColor;
+
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = freqFont;
+
+    ctx.fillText(peek.frequency.toFixed(2), x, cy);
+
+    ctx.restore();
+  }
+
+  function drawSeparator(x0, y0, x1, y1) {
+
+    ctx.save();
+
+    ctx.beginPath();
+
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x1, y1);
+
+    ctx.lineCap     = "round";
+
+    ctx.stroke();
+
+    ctx.restore();
+  }
 
   Object.defineProperties(this, {
       "width" : {
@@ -294,7 +292,7 @@ function SimpleView(containerID) {
     }
     , "update" : {
         value : function (element) {
-          
+
           if(!startID){
             throw new ReferenceError("Start the view before calling update.");
           }
@@ -310,7 +308,3 @@ function SimpleView(containerID) {
 
   document.getElementById(containerID).appendChild(cvs);
 }
-
-  global.SimpleView = SimpleView;
-
-}(window));
