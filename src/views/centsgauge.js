@@ -1,4 +1,4 @@
-function CentsGauge(containerID) {
+function CentsGauge() {
 
   if (CentsGauge.prototype.instance) {
     console.log("An instance of CentsGauge already exists.");
@@ -7,13 +7,13 @@ function CentsGauge(containerID) {
 
   CentsGauge.prototype.instance = this;
 
-  var viewElement   = document.createElement("div")
-  , fgCVS         = document.createElement("canvas")
-  , bgCVS         = document.createElement("canvas")
-  , fgCTX         = fgCVS.getContext("2d")
-  , bgCTX         = bgCVS.getContext("2d")
+  var fgCVS
+  , bgCVS
+  , fgCVS
+  , fgCTX
   , peek          = defaultPeek
   , requestType   = { peek : true, spectrum : false, updateTime : true}
+  , requiredCVS   = 2
   , audDiff       = 5 /* cents */
   , mxCents       = 50
   , padding       = 40
@@ -69,32 +69,12 @@ function CentsGauge(containerID) {
     return tw < th ? tw : th;
   }
 
-  /* FOREGROUND Canvas setup & properties */
-  fgCVS.id = "gtunerViewFg";
-
-  fgCVS.width  = width;
-  fgCVS.height = height;
-
-  fgCVS.style.position = "absolute";
-  fgCVS.style.zIndex   = 1;
-
   function fgSetStyle() {
     fgCTX.textAlign   = "center";
     fgCTX.fillStyle   = baseColor;
     fgCTX.strokeStyle = baseColor;
     fgCTX.font        = noteFont;
   }
-  /* FOREGROUND */
-
-  /* BACKGROUND Canvas setup & properties */
-  bgCVS.id = "gtunerViewBg";
-
-  bgCVS.width  = width;
-  bgCVS.height = height;
-
-  bgCVS.style.position = "absolute";
-  bgCVS.style.zIndex   = 0;
-  bgCVS.style.background = bgColor;
 
   function bgSetStyle() {
     bgCTX.fillStyle    = baseColor;
@@ -104,13 +84,6 @@ function CentsGauge(containerID) {
     bgCTX.font         = "14px sans-serif";
     bgCTX.textBaseline = "bottom";
   }
-  /* BACKGROUND */
-
-  /* Wrap background and foreground elements for easier manipulation */
-  viewElement.id = "gtunerView";
-
-  viewElement.appendChild(bgCVS);
-  viewElement.appendChild(fgCVS);
 
   function drawTicks(from, to, color, arc) {
 
@@ -213,7 +186,42 @@ function CentsGauge(containerID) {
   }
 
   Object.defineProperties(this, {
-    "width" : {
+      "setCVS" : {
+        enumerable   : true
+      , configurable : false
+      , set : function (cvs) {
+
+          fgCVS         = cvs[0];
+          bgCVS         = cvs[1];
+          fgCTX         = fgCVS.getContext("2d");
+          bgCTX         = bgCVS.getContext("2d");
+
+          /* FOREGROUND Canvas setup & properties */
+          fgCVS.id = "gtunerViewFg";
+
+          fgCVS.width  = width;
+          fgCVS.height = height;
+
+          fgCVS.style.position = "absolute";
+          fgCVS.style.zIndex   = 1;
+          fgCVS.style.background = "transparent";
+
+          /* BACKGROUND Canvas setup & properties */
+          bgCVS.id = "gtunerViewBg";
+
+          bgCVS.width  = width;
+          bgCVS.height = height;
+
+          bgCVS.style.position = "absolute";
+          bgCVS.style.zIndex   = 0;
+          bgCVS.style.background = bgColor;
+
+          bgSetStyle();
+          fgSetStyle();
+          drawBackground();
+      }
+    }
+    , "width" : {
         enumerable   : true
       , configurable : false
       , get : function () {
@@ -343,6 +351,12 @@ function CentsGauge(containerID) {
     }
     , "requestType" : {
         value        : requestType
+      , configurable : false
+      , enumerable   : true
+      , writable     : false
+    }
+    , "requiredCVS" : {
+        value        : requiredCVS
       , configurable : false
       , enumerable   : true
       , writable     : false
@@ -534,12 +548,6 @@ function CentsGauge(containerID) {
       , writable     : false
     }
   });
-
-    document.getElementById(containerID).appendChild(viewElement);
-
-    bgSetStyle();
-    fgSetStyle();
-    drawBackground();
 
 };
 

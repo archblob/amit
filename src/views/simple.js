@@ -1,4 +1,4 @@
-function SimpleView(containerID) {
+function SimpleView() {
 
   if (SimpleView.prototype.instance) {
     console.log("An instance of SimpleView already exists.");
@@ -7,10 +7,11 @@ function SimpleView(containerID) {
 
   SimpleView.prototype.instance = this;
 
-  var cvs            = document.createElement("canvas")
-  , ctx              = cvs.getContext("2d")
+  var cvs
+  , ctx
   , peek             = defaultPeek
   , requestType      = { peek : true, spectrum : false, updateTime : false}
+  , requiredCVS      = 1
   , width            = 400
   , height           = 200
   , xpad             = 10
@@ -36,20 +37,12 @@ function SimpleView(containerID) {
   , startID
   ;
 
-  cvs.width  = width;
-  cvs.height = height;
-  cvs.style.background = bgColor;
-
   function ctxStyleSetup() {
 
     ctx.fillStyle   = baseColor;
     ctx.strokeStyle = baseColor;
 
   }
-
-  ctxStyleSetup();
-
-  cvs.id = "gtunerView";
 
   function drawArrow(direction) {
 
@@ -115,7 +108,24 @@ function SimpleView(containerID) {
   }
 
   Object.defineProperties(this, {
-      "width" : {
+      "setCVS" : {
+        enumerable   : false
+      , configurable : false
+      , set : function (cvs) {
+
+          cvs = cvs[0];
+          ctx = cvs.getContext("2d");
+
+          cvs.id = "gtunerView";
+
+          cvs.width  = width;
+          cvs.height = height;
+          cvs.style.background = bgColor;
+
+          ctxStyleSetup();
+      }
+    }
+    , "width" : {
         enumerable   : true
       , configurable : false
       , get : function () {
@@ -164,6 +174,12 @@ function SimpleView(containerID) {
     }
     , "requestType" : {
         value        : requestType
+      , configurable : false
+      , enumerable   : true
+      , writable     : false
+    }
+    , "requiredCVS" : {
+        value        : requiredCVS
       , configurable : false
       , enumerable   : true
       , writable     : false
@@ -284,7 +300,7 @@ function SimpleView(containerID) {
           drawFrequency();
           drawNoteName();
 
-          startID = window.requestAnimationFrame(this.run.bind(this));
+          startID = window.requestAnimationFrame(this.start.bind(this));
        }
       , enumerable   : false
       , configurable : false
@@ -305,6 +321,4 @@ function SimpleView(containerID) {
       , writable     : false
     }
   });
-
-  document.getElementById(containerID).appendChild(cvs);
 }

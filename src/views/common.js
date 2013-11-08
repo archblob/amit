@@ -31,7 +31,7 @@ function TunerView(containerID) {
     , viewContainer = document.getElementById(containerID)
     , viewWrapper   = document.createElement("div")
     ;
-    
+
   viewWrapper.id = "tunerWrapper"
   /* TODO: check to see if the container is found. */
 
@@ -46,6 +46,9 @@ function TunerView(containerID) {
           /* TODO: checks if it is a function and
            * and methods has the necessary methods.
            */
+          if (viewType) {
+            window.clearInterval(viewType.startID);
+          }
           viewType = vT;
           /* TODO: check to see it it's a natural number */
           reqCvs   = viewType.requiredCVS;
@@ -56,19 +59,19 @@ function TunerView(containerID) {
               canvases[depth] = document.createElement("canvas");
               depth += 1;
             } else {
-              viewWrapper.removeChild(canvases[depth]);
+              viewWrapper.removeChild(canvases[depth - 1]);
               canvases.pop();
               depth -= 1;
             }
           }
 
-          for (cvs in canvases) {
+          for (var cvs in canvases) {
             viewWrapper.appendChild(canvases[cvs]);
           }
 
           viewContainer.appendChild(viewWrapper);
 
-          viewType.setCVS(canvases);
+          viewType.setCVS = canvases;
           viewType.start();
         }
     }
