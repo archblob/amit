@@ -1,0 +1,22 @@
+      {% if page.title == 'Demo' %}
+      <span><p>To start the demo choose one of the views bellow. You can also switch between them while the tuner is running.</p></span>
+      <div id="simpleViewButton">Simple View</div>
+      <div id="gaugeViewButton">Gauge View</div>
+      <div id="demoWrapper">
+      </div>
+      <div id="tableContainer"></div>
+      {% endif %}
+      </section>
+      <footer>
+      <p>&copy; 2013 Csernik Flaviu Andrei</p>
+      <p>Hosted on&nbsp;<a href="https://pages.github.com">GitHub Pages</a>.</p>
+      </footer>
+    </div>
+    {% if page.title == 'Demo' %}
+      <script type="text/javascript" src="{{ site.baseurl }}/lib/dsp.js"></script>
+      <script type="text/javascript" src="{{ site.baseurl }}/build/dist/tuner.js"></script>
+      <script type="text/javascript" src="{{ site.baseurl }}/build/dist/views.js"></script>
+      {% include demo.html %}
+    {% endif %}
+  </body>
+</html>

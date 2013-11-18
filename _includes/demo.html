@@ -1,0 +1,101 @@
+<script type="text/javascript">
+
+function insertPropertyTable(obj, container) {
+
+  var tableContainer = document.getElementById(container);
+
+  var tableElement = document.createElement("table")
+    , tableHead    = document.createElement("thead")
+    , tableBody    = document.createElement("tbody")
+    , tableHeadRow = document.createElement("tr")
+    , tableHeadPrp = document.createElement("th")
+    , tableHeadVal = document.createElement("th")
+    ;
+
+  tableElement.appendChild(tableHead);
+  tableElement.appendChild(tableBody);
+  tableHead.appendChild(tableHeadRow);
+
+  tableHeadPrp.innerHTML = "Property";
+  tableHeadVal.innerHTML = "Value";
+
+  tableHeadRow.appendChild(tableHeadPrp);
+  tableHeadRow.appendChild(tableHeadVal);
+
+  var propName
+    , propValue
+    , propRow
+    ;
+
+  for (dspProp in obj) {
+    if (dspProp != "_instance") {
+      propName  = document.createElement("td")
+      propValue = document.createElement("td")
+      propRow   = document.createElement("tr")
+
+      propName.innerHTML  = dspProp;
+      propValue.innerHTML = obj[dspProp];
+
+      propRow.appendChild(propName);
+      propRow.appendChild(propValue);
+
+      tableBody.appendChild(propRow);
+    }
+  }
+
+  tableContainer.appendChild(tableElement);
+}
+
+var demoTuner   = new Tuner()
+  , demoView    = new TunerView("demoWrapper")
+  , demoWrapper = document.getElementById("demoWrapper");
+  ;
+
+insertPropertyTable(demoTuner,"tableContainer");
+
+  function launchDemo(view) {
+
+    demoWrapper.style.height = "220px";
+
+    navigator.getMedia =
+      navigator.getUserMedia || navigator.webkitGetUserMedia ||
+      navigator.mozGetUserMedia || navigator.msGetUserMedia;
+
+    navigator.getMedia(
+        { audio : true
+        },
+        function (stream) {
+
+              switch(view) {
+              case "simple": demoView.viewType = new SimpleView();
+                             break;
+              case "gauge": demoView.viewType = new CentsGauge();
+                            break;
+              default: throw new ReferenceError("Specified view [" + view + "]" +
+                                                "does not exist.");
+              }
+
+              demoTuner.viewCallback   = demoView.viewType.update;
+              demoTuner.setAudioStream = stream;
+
+              demoTuner.start();
+
+          }
+        , function (err) {
+            /* print it on the webpage */
+            console.log(err);
+        }
+    );
+  }
+
+  var gaugeBtn  = document.getElementById("gaugeViewButton")
+    , simpleBtn = document.getElementById("simpleViewButton")
+    ;
+
+  /* test to see if the elements exist */
+  simpleBtn.addEventListener("click",
+      function () { launchDemo("simple");}, false);
+  gaugeBtn.addEventListener("click",
+      function () { launchDemo("gauge");}, false);
+
+</script>

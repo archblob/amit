@@ -1,0 +1,10 @@
+name        : "guitar-tuner"
+description : "Simple guitar tuner using the Web Audio API."
+baseurl     : "/amit"
+
+safe: true
+lsi: false
+markdown : redcarpet
+pygments : true
+
+navCategories : ["Project", "Application"]
