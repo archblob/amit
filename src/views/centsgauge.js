@@ -9,8 +9,8 @@ function CentsGauge() {
 
   var fgCVS
   , bgCVS
-  , fgCVS
   , fgCTX
+  , bgCTX
   , peek          = defaultPeek
   , requestType   = { peek : true, spectrum : false, updateTime : true}
   , requiredCVS   = 2
