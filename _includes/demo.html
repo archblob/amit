@@ -54,7 +54,6 @@ var demoTuner   = new Tuner()
 insertPropertyTable(demoTuner,"tableContainer");
 
   function launchDemo(view) {
-
     demoWrapper.style.height = "220px";
 
     navigator.getMedia =
@@ -78,6 +77,9 @@ insertPropertyTable(demoTuner,"tableContainer");
               demoTuner.viewCallback   = demoView.viewType.update;
               demoTuner.setAudioStream = stream;
 
+              demoView.viewType.height = 200;
+              demoView.viewType.width  = 380;
+
               demoTuner.start();
 
           }
@@ -88,14 +90,11 @@ insertPropertyTable(demoTuner,"tableContainer");
     );
   }
 
-  var gaugeBtn  = document.getElementById("gaugeViewButton")
-    , simpleBtn = document.getElementById("simpleViewButton")
+  var startBtn  = document.getElementById("startBtn")
     ;
 
   /* test to see if the elements exist */
-  simpleBtn.addEventListener("click",
-      function () { launchDemo("simple");}, false);
-  gaugeBtn.addEventListener("click",
+  startBtn.addEventListener("click",
       function () { launchDemo("gauge");}, false);
 
 </script>
