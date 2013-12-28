@@ -74,6 +74,7 @@ insertPropertyTable(demoTuner,"tableContainer");
                                                 "does not exist.");
               }
 
+              demoTuner.requestDataType = demoView.viewType.requestType;
               demoTuner.viewCallback   = demoView.viewType.update;
               demoTuner.setAudioStream = stream;
 
