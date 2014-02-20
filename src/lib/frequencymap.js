@@ -65,12 +65,12 @@ var FrequencyMap = (function () {
   Object.defineProperty(FrequencyMap.prototype, "closestNote", {
       value : function (freq) {
         /* Do a binary search on the frequency array and
-         * return closest match;
+         * return the closest match;
          */
 
         if (!this.A4) {
           throw new ReferenceError("Please set a reference frequency on the " +
-                                    "FrequencyMap object.");
+                                   "FrequencyMap object.");
         }
 
         var closestNote = this.frequencyMap[0]
