@@ -1,6 +1,6 @@
 var FrequencyMap = (function () {
 
-  /* 12-TET(12 Tone Equal Tempered scale */
+  /* 12-TET(12 Tone Equal Tempered scale) */
   /* reference frequency default is A4 440 Hz*/
 
   var notes = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"]
