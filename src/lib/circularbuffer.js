@@ -1,5 +1,4 @@
 var Ring = (function () {
-
   function IndexOutOfBounds(maxIndex, requestedIndex, method) {
     this.maxIndex       = maxIndex;
     this.requestedIndex = requestedIndex;
@@ -24,7 +23,6 @@ var Ring = (function () {
   };
 
   function Ring(len, blockLen) {
-    
     var length      = len
       , maxIndex    = length - 1
       , start       = 0
@@ -38,13 +36,10 @@ var Ring = (function () {
     blockLength = 0;
 
     if (blockLen) {
-
       if (len % blockLen !== 0) {
         throw "Block length must be a factor of length.";
       }
-
       blockLength = blockLen;
-
     }
 
     Object.defineProperties(this, {
@@ -75,9 +70,7 @@ var Ring = (function () {
       }
       , "set" : {
            value : function (index, value) {
-
              checkBounds(index, maxIndex, 'set');
-
              buffer[relativeIndex(index, start, length)] = value;
           }
          , enumerable   : true
@@ -86,7 +79,6 @@ var Ring = (function () {
       }
       , "concat" : {
             value : function (arr) {
-
               var alen = arr.length
                 , nlen = start + alen
                 ;
@@ -109,7 +101,6 @@ var Ring = (function () {
       }
       , "map" : {
             value : function (callback) {
-
               var relIndex
                 , value
                 , i
@@ -130,7 +121,6 @@ var Ring = (function () {
   }
 
 function checkBounds(requested, maxIndex, callerName) {
-
   if (requested < 0 || requested > maxIndex) {
     throw new IndexOutOfBounds(maxIndex, requested, callerName);
   }
