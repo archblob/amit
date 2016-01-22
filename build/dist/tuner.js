@@ -550,10 +550,11 @@ function Tuner() {
             highpass  = context.createBiquadFilter();
             processor = context.createScriptProcessor(512,1,1);
 
-            lowpass.type       = "lowpass";
-            highpass.type      = "highpass";
-            lowpass.frequency  = (effectiveSamplerate / 2).toFixed(3);
-            highpass.frequency = 35;
+            lowpass.type  = "lowpass";
+            highpass.type = "highpass";
+
+            lowpass.frequency.value  = (effectiveSamplerate / 2).toFixed(3);
+            highpass.frequency.value = 35;
         }
       },
       "samplerate" : {
