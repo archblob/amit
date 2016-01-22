@@ -77,8 +77,9 @@ function Tuner() {
 
             lowpass.type       = "lowpass";
             highpass.type      = "highpass";
-            lowpass.frequency  = (effectiveSamplerate / 2).toFixed(3);
-            highpass.frequency = 35;
+
+            lowpass.frequency.value  = (effectiveSamplerate / 2).toFixed(3);
+            highpass.frequency.value = 35;
         }
       },
       "samplerate" : {
